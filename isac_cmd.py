@@ -35,7 +35,7 @@ class IsacCmd(cmd.Cmd):
         green.sleep(0.1)
 
     def do_test1(self, args):
-      print self.isac_node.survey_value_name(args)
+        pp(self.isac_node.survey_value_name(args))
 
     def do_test2(self, args):
         print self.isac_node.survey_last_value(args)
