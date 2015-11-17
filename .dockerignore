@@ -1,3 +1,5 @@
 .dockerignore
 Dockerfile
+Dockerfile-rpi
 Makefile
+README.md
