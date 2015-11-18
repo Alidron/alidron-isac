@@ -5,7 +5,7 @@ registry = registry.tinigrifi.org:5000
 
 network_name = alidron
 
-.PHONY: clean clean-dangling build build-rpi push push-rpi pull pull-rpi run-bash run run1 run1-rpi run2 run2-rpi run3 test1 test2
+.PHONY: clean clean-dangling build build-rpi push push-rpi pull pull-rpi run-bash run run1 run1-rpi run2 run2-rpi run3 test1 test2 unittest unittest-live
 
 clean:
 	docker rmi $(image_name) || true
@@ -64,3 +64,6 @@ test2:
 
 unittest:
 	docker run --rm --name alidron-isac-unittest $(image_name) py.test -s /usr/src/alidron-isac
+
+unittest-live:
+	docker run --rm --name alidron-isac-unittest -v `pwd`:/usr/src/alidron-isac/isac $(image_name) py.test -s /usr/src/alidron-isac
