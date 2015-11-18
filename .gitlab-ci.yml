@@ -1,5 +1,6 @@
 stages:
     - build
+    - test
     - deploy
     
 build-x86:
@@ -8,6 +9,13 @@ build-x86:
         - x86
     script:
         - make build
+        
+test-x86:
+    stage: test
+    tags:
+        - x86
+    script:
+        - make unittest
         
 deploy-x86:
     stage: deploy
