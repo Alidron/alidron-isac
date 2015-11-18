@@ -17,7 +17,7 @@ class SurveyValueMetadata(Survey):
 
         if name in self.isac_node.isac_values:
             isac_value = self.isac_node.isac_values[name]
-            print '@@@@@@@', name, id(isac_value), type(isac_value._metadata), isac_value._metadata
+            #print '@@@@@@@', name, id(isac_value), type(isac_value._metadata), isac_value._metadata
             if isac_value.metadata:
                 logger.info('Responding to metadata survey for %s', name)
                 self.reply(peer_id, request_id, isac_value.metadata)

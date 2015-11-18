@@ -51,3 +51,17 @@ def test_survey_value_name():
     finally:
         nA.shutdown()
         nB.shutdown()
+
+def test_survey_value_metadata():
+    nA = IsacNode('testA')
+    nB = IsacNode('testB')
+
+    try:
+        iv_nometa = IsacValue(nA, 'iv_nometa')
+        iv_meta = IsacValue(nA, 'iv_meta', metadata={'a': 1, 'b': 2})
+
+        assert nB.survey_value_metadata('iv_nometa') is None
+        assert nB.survey_value_metadata('iv_meta') == iv_meta.metadata
+    finally:
+        nA.shutdown()
+        nB.shutdown()
