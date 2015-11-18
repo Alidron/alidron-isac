@@ -1,4 +1,15 @@
 .dockerignore
+.git
+.gitignore
+.gitlab-ci.yml
+.cache
+__pycache__
+tests/__pycache__
+*.pyc
+*/*.pyc
+*/*/*.pyc
+*/*/*/*.pyc
+*/*/*/*/*.pyc
 Dockerfile
 Dockerfile-rpi
 Makefile
