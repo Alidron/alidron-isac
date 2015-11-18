@@ -63,4 +63,4 @@ test2:
 	docker run -it --net=$(network_name) --rm $(image_name) python test.py test02
 
 unittest:
-	docker run -it --rm --name alidron-isac-unittest -v `pwd`:/usr/src/alidron-isac/isac $(image_name) py.test -s /usr/src/alidron-isac
+	docker run --rm --name alidron-isac-unittest $(image_name) py.test -s /usr/src/alidron-isac
