@@ -36,7 +36,7 @@ pull-rpi:
 	docker tag $(registry)/$(rpi_image_name) $(rpi_image_name)
 
 run-bash:
-	docker run -it --net=$(network_name) --rm -v /media/data/Informatique/Python/Netcall/netcall:/usr/src/netcall $(image_name) bash
+	docker run -it --net=$(network_name) --rm -v /media/data/Informatique/Python/Netcall/netcall:/usr/src/netcall -v `pwd`:/usr/src/alidron-isac/isac $(image_name) bash
 
 run:
 	docker run -it --net=$(network_name) --rm $(image_name) python -m isac_cmd hello
@@ -61,3 +61,6 @@ test1:
 
 test2:
 	docker run -it --net=$(network_name) --rm $(image_name) python test.py test02
+
+unittest:
+	docker run -it --rm --name alidron-isac-unittest -v `pwd`:/usr/src/alidron-isac/isac $(image_name) py.test -s /usr/src/alidron-isac
