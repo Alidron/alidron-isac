@@ -22,7 +22,7 @@ from netcall.green import RemoteRPCError, JSONSerializer
 from netcall import concurrency
 from pyre import Pyre
 
-from .transport.pyre_node import PyreNode
+from .transport import PyreNode
 from .survey import SurveysManager
 
 _tools = concurrency.get_tools(env=green_backend)
