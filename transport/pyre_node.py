@@ -134,6 +134,12 @@ class PyreNode(Pyre):
             self.peer_header_value(peer, prefix + '_port')
         )
 
+    def join_event(self):
+        self.join('EVENT')
+
+    def leave_event(self):
+        self.leave('EVENT')
+
     def send_survey(self, request, timeout, limit_peers):
         #request['req_id'] = ('%x' % randint(0, 0xFFFFFFFF)).encode()
         self.request_results[request['req_id']] = []

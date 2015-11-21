@@ -15,6 +15,7 @@ from netcall.green import RemoteRPCError, JSONSerializer
 
 from .transport import PyreNode
 from .survey import SurveysManager
+from .event import EventsManager
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +43,7 @@ class IsacNode(object):
         self.transport = PyreNode(name, self.context)
         try:
             self.surveys_manager = SurveysManager(self, self.transport)
+            self.events_manager = EventsManager(self, self.transport)
         except:
             self.transport.stop()
             raise
@@ -49,7 +51,7 @@ class IsacNode(object):
         self.transport.on_new_peer = self._on_new_peer
         self.transport.on_peer_gone = self._on_peer_gone
         self.transport.on_survey = self.surveys_manager.on_survey
-        self.transport.on_event = self._on_event
+        self.transport.on_event = self.events_manager.on_event
 
         self.transport.set_header('rpc_proto', 'tcp')
         self.transport.set_header('rpc_port', str(self.rpc_service_port))
@@ -63,8 +65,6 @@ class IsacNode(object):
         self.isac_values = WeakValueDictionary() # Should be a weakdict
 
         green.sleep(0.1)
-
-        self._isac_value_entering_obs = Observable()
 
     def subscribe(self, topic, isac_value):
         logger.info('Subscribing to %s', topic)
@@ -87,45 +87,16 @@ class IsacNode(object):
         return self.surveys_manager.call('SurveyValueHistory', name, time_period, timeout=timeout, limit_peers=limit_peers)
 
     def event_isac_value_entering(self, value_name):
-        logger.info('Sending event for an entering isac value for %s', value_name)
-        data = {
-            'event_name': 'isac_value_entering',
-            'data': value_name
-        }
-        self.transport.send_event(data)
-
-    def do_event_isac_value_entering(self, peer_name, value_name):
-        logger.info('EVENT isac value entering from %s: %s', peer_name, value_name)
-        self._isac_value_entering_obs(peer_name, value_name)
+        self.events_manager.send('IsacValueEnteringEvent', value_name)
 
     def register_isac_value_entering(self, observer):
-        if not self._isac_value_entering_obs:
-            self.transport.join('EVENT')
-
-        logger.debug('Registering %s', observer.__name__)
-        self._isac_value_entering_obs += observer
+        self.events_manager.call('IsacValueEnteringEvent', 'register_observer', observer)
 
     def unregister_isac_value_entering(self, observer):
-        logger.debug('Unregistering %s', observer.__name__)
-        self._isac_value_entering_obs -= observer
-
-        if not self._isac_value_entering_obs:
-            self.transport.leave('EVENT')
+        self.events_manager.call('IsacValueEnteringEvent', 'unregister_observer', observer)
 
     def event_value_metadata_update(self, value_name, metadata):
-        logger.info('Sending event for a value metadata update for %s', value_name)
-        data = {
-            'event_name': 'event_value_metadata_update',
-            'data': (value_name, metadata)
-        }
-        self.transport.send_event(data)
-
-    def do_event_value_metadata_update(self, peer_name, data):
-        value_name, metadata = data
-        logger.info('EVENT value metadata update for %s', value_name)
-
-        if value_name in self.isac_values:
-            self.isac_values[value_name]._set_metadata(metadata)
+        self.events_manager.send('ValueMetadataUpdateEvent', value_name, metadata)
 
     def _read_sub(self):
         while self.running:
@@ -162,13 +133,6 @@ class IsacNode(object):
     def _on_peer_gone(self, peer_id, peer_name):
         logger.debug('Peer gone: %s, %s', peer_name, peer_id)
         # TODO: cleanup sub and rpc connections
-
-    def _on_event(self, peer_id, peer_name, request):
-        if request['event_name'] == 'isac_value_entering':
-            self.do_event_isac_value_entering(peer_name, request['data'])
-
-        if request['event_name'] == 'event_value_metadata_update':
-            self.do_event_value_metadata_update(peer_name, request['data'])
 
     def serve_forever(self):
         self.transport.task.join()
