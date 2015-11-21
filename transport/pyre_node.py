@@ -33,6 +33,8 @@ class PyreNode(Pyre):
         self.poller = zmq.Poller()
         self.poller.register(self.inbox, zmq.POLLIN)
 
+        self.join('SURVEY')
+
     def run(self, timeout=None):
         self.task = green.spawn(self._run, timeout)
 

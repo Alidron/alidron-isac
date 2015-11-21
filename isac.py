@@ -97,8 +97,6 @@ class IsacNode(object):
 
         green.sleep(0.1)
 
-        self.pyre.join('SURVEY')
-
         self._isac_value_entering_obs = Observable()
 
     def subscribe(self, topic, isac_value):
