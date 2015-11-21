@@ -7,7 +7,7 @@ def test_creation():
     n = IsacNode('test')
     n.shutdown()
 
-def test_2creation():
+def test_creation_double():
     n1 = IsacNode('A')
     n2 = IsacNode('B')
 

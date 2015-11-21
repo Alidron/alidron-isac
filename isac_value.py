@@ -28,15 +28,21 @@ class IsacValue(object):
             self._value, self._timestamp = None, datetime.fromtimestamp(0)
             self.update_value_from_isac(*self.isac_node.survey_last_value(self.name, limit_peers=1))
         elif isinstance(initial_value, tuple):
-            last_value, last_ts = self.isac_node.survey_last_value(self.name, limit_peers=1)
+            last_value, last_ts_float = self.isac_node.survey_last_value(self.name, limit_peers=1)
+
+            if isinstance(initial_value[1], datetime):
+                last_ts = datetime.fromtimestamp(last_ts_float)
+            else:
+                last_ts = last_ts_float
+
             if initial_value[1] > last_ts: # We want to publish our last value to anyone outside
-                print 'publishing former value', initial_value
+                logger.debug('publishing former value', initial_value)
                 self.value_ts = initial_value
             else: # We want to notify all our internal subscribers of the newer last value
                 self._value, self._timestamp = None, datetime.fromtimestamp(0)
-                self.update_value_from_isac(last_value, last_ts)
+                self.update_value_from_isac(last_value, last_ts_float)
         else:
-            print 'publishing value', initial_value
+            logger.debug('publishing value', initial_value)
             self.value_ts = initial_value, ts
 
         #print '>>>>>', self.name, id(self), type(self._metadata), self._metadata
@@ -66,9 +72,8 @@ class IsacValue(object):
     #        green.spawn(observer, *args, **kwargs)
 
     @property
-    def value(self, refresh=True):
-        if refresh:
-            green.sleep(0.001)
+    def value(self):
+        green.sleep(0.001)
         return self._value
 
     @value.setter
@@ -111,6 +116,9 @@ class IsacValue(object):
         self.isac_node.event_value_metadata_update(self.name, self._metadata)
 
     def _set_metadata(self, metadata):
+        if not metadata:
+            return
+
         self._metadata = metadata
         if self._metadata:
             self.metadata_observers(self.name, self._metadata)
@@ -138,7 +146,7 @@ class IsacValue(object):
     def get_history(self, time_period):
         peer_name = self.isac_node.survey_value_history(self.name, time_period)
         if not peer_name:
-            raise Exception('Could not find any peer that could provide history for %s' % self.name)
+            raise NoPeerWithHistoryException('Could not find any peer that could provide history for %s' % self.name)
 
         t1, t2 = time_period
         if isinstance(t1, datetime):
@@ -151,3 +159,6 @@ class IsacValue(object):
 
     def __str__(self):
         return '{0}: {1}'.format(self.timestamp, self.value)
+
+class NoPeerWithHistoryException(Exception):
+    pass
