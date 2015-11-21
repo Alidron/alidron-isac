@@ -3,7 +3,6 @@ import logging
 from random import randint
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 _BUILTIN_SURVEYS = [
     '.value',
@@ -17,6 +16,10 @@ class Survey(object):
 
         self.timeout = 0.5
         self.limit_peers = 0
+
+    @classmethod
+    def name(cls):
+        return cls.__name__
 
     def _consume_arg(self, arg_name, default_value, kwargs):
         if arg_name in kwargs:
@@ -32,7 +35,7 @@ class Survey(object):
 
         request = {
             'req_id': ('%x' % randint(0, 0xFFFFFFFF)).encode(),
-            'function': self.__class__.__name__,
+            'function': self.name(),
             'args': args,
             'kwargs': kwargs
         }
@@ -67,7 +70,7 @@ class SurveysManager(object):
                 self.load(getattr(survey_package, survey_name))
 
     def load(self, survey_class):
-        class_name = survey_class.__name__
+        class_name = survey_class.name()
         self.loaded_surveys[class_name] = survey_class(self.isac_node, self.transport)
 
     def call(self, name, *args, **kwargs):
@@ -77,4 +80,4 @@ class SurveysManager(object):
         if request['function'] in self.loaded_surveys:
             self.loaded_surveys[request['function']].process_request(peer_id, request['req_id'], *request['args'], **request['kwargs'])
         else:
-            logger.warning('Rejecting request to unknown surve: %s', request['function'])
+            logger.warning('Rejecting request to unknown survey: %s', request['function'])
