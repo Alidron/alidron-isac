@@ -72,26 +72,26 @@ class IsacNode(object):
 
         self.sub = self.context.socket(zmq.SUB)
 
-        self.pyre = PyreNode(name, self.context)
+        self.transport = PyreNode(name, self.context)
         try:
-            self.surveys_manager = SurveysManager(self, self.pyre)
+            self.surveys_manager = SurveysManager(self, self.transport)
         except:
-            self.pyre.stop()
+            self.transport.stop()
             raise
 
-        self.pyre.on_new_peer = self._on_new_peer
-        self.pyre.on_peer_gone = self._on_peer_gone
-        self.pyre.on_survey = self.surveys_manager.on_survey
-        self.pyre.on_event = self._on_event
+        self.transport.on_new_peer = self._on_new_peer
+        self.transport.on_peer_gone = self._on_peer_gone
+        self.transport.on_survey = self.surveys_manager.on_survey
+        self.transport.on_event = self._on_event
 
-        self.pyre.set_header('rpc_proto', 'tcp')
-        self.pyre.set_header('rpc_port', str(self.rpc_service_port))
-        self.pyre.set_header('pub_proto', 'tcp')
-        self.pyre.set_header('pub_port', str(self.pub_port))
+        self.transport.set_header('rpc_proto', 'tcp')
+        self.transport.set_header('rpc_port', str(self.rpc_service_port))
+        self.transport.set_header('pub_proto', 'tcp')
+        self.transport.set_header('pub_port', str(self.pub_port))
 
         self.rpc_service.start()
         self.sub_task = green.spawn(self._read_sub)
-        self.pyre.run(0.1)
+        self.transport.run(0.1)
 
         self.isac_values = WeakValueDictionary() # Should be a weakdict
 
@@ -125,7 +125,7 @@ class IsacNode(object):
             'event_name': 'isac_value_entering',
             'data': value_name
         }
-        self.pyre.send_event(data)
+        self.transport.send_event(data)
 
     def do_event_isac_value_entering(self, peer_name, value_name):
         logger.info('EVENT isac value entering from %s: %s', peer_name, value_name)
@@ -133,7 +133,7 @@ class IsacNode(object):
 
     def register_isac_value_entering(self, observer):
         if not self._isac_value_entering_obs:
-            self.pyre.join('EVENT')
+            self.transport.join('EVENT')
 
         logger.debug('Registering %s', observer.__name__)
         self._isac_value_entering_obs += observer
@@ -143,7 +143,7 @@ class IsacNode(object):
         self._isac_value_entering_obs -= observer
 
         if not self._isac_value_entering_obs:
-            self.pyre.leave('EVENT')
+            self.transport.leave('EVENT')
 
     def event_value_metadata_update(self, value_name, metadata):
         logger.info('Sending event for a value metadata update for %s', value_name)
@@ -151,7 +151,7 @@ class IsacNode(object):
             'event_name': 'event_value_metadata_update',
             'data': (value_name, metadata)
         }
-        self.pyre.send_event(data)
+        self.transport.send_event(data)
 
     def do_event_value_metadata_update(self, peer_name, data):
         value_name, metadata = data
@@ -204,15 +204,15 @@ class IsacNode(object):
             self.do_event_value_metadata_update(peer_name, request['data'])
 
     def serve_forever(self):
-        self.pyre.task.join()
+        self.transport.task.join()
 
     def shutdown(self):
         self.running = False
 
         green.sleep(0.1)
 
-        logger.debug('Shutting down pyre')
-        self.pyre.shutdown()
+        logger.debug('Shutting down transport')
+        self.transport.shutdown()
         logger.debug('Shutting down rpc')
         self.rpc_service.shutdown()
         logger.debug('Shutting down pub')

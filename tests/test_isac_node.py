@@ -12,8 +12,8 @@ def test_2creation():
     n2 = IsacNode('B')
 
     try:
-        assert n1.pyre.uuid() == n2.pyre.peers()[0]
-        assert n2.pyre.uuid() == n1.pyre.peers()[0]
+        assert n1.transport.uuid() == n2.transport.peers()[0]
+        assert n2.transport.uuid() == n1.transport.peers()[0]
     finally:
         n1.shutdown()
         n2.shutdown()
