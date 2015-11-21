@@ -5,6 +5,7 @@ import uuid
 import time
 from datetime import datetime
 from random import randint
+from weakref import WeakValueDictionary
 
 green_backend = 'gevent'
 
@@ -92,7 +93,7 @@ class IsacNode(object):
         self.sub_task = green.spawn(self._read_sub)
         self.pyre.run(0.1)
 
-        self.isac_values = {} # Should be a weakdict
+        self.isac_values = WeakValueDictionary() # Should be a weakdict
 
         green.sleep(0.1)
 
@@ -263,6 +264,10 @@ class IsacValue(object):
         self.isac_node.subscribe(name, self)
 
         self.isac_node.event_isac_value_entering(self.name)
+
+    def __del__(self):
+        if self.name in self.isac_node.rpc_service.procedures:
+            del self.isac_node.rpc_service.procedures[self.name]
 
     #def register(self, observer):
     #    if observer not in self._observers:
