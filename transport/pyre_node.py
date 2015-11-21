@@ -164,6 +164,9 @@ class PyreNode(Pyre):
 
         return result
 
+    def send_event(self, request):
+        self.shout('EVENT', json.dumps(request))
+
     def reply_survey(self, peer_id, reply):
         self.whisper(peer_id, json.dumps(reply))
 

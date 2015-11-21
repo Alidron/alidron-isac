@@ -125,7 +125,7 @@ class IsacNode(object):
             'event_name': 'isac_value_entering',
             'data': value_name
         }
-        self.pyre.shout('EVENT', json.dumps(data))
+        self.pyre.send_event(data)
 
     def do_event_isac_value_entering(self, peer_name, value_name):
         logger.info('EVENT isac value entering from %s: %s', peer_name, value_name)
@@ -151,7 +151,7 @@ class IsacNode(object):
             'event_name': 'event_value_metadata_update',
             'data': (value_name, metadata)
         }
-        self.pyre.shout('EVENT', json.dumps(data))
+        self.pyre.send_event(data)
 
     def do_event_value_metadata_update(self, peer_name, data):
         value_name, metadata = data
