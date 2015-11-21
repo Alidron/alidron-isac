@@ -14,7 +14,7 @@ class SurveyValuesMetadata(Survey):
 
     def ask(self, names, is_re=False, **kwargs):
         kwargs['is_re'] = is_re
-        super(self.__class__, self).ask(names, **kwargs)
+        return super(self.__class__, self).ask(names, **kwargs)
 
     def process_request(self, peer_id, request_id, names, is_re=False):
         logger.debug('Survey request for metadata for %s', names)

@@ -114,7 +114,7 @@ class IsacNode(object):
         return self.surveys_manager.call('SurveyValueMetadata', name, timeout=timeout, limit_peers=limit_peers)
 
     def survey_values_metadata(self, names, is_re=False, timeout=0.5, limit_peers=1):
-        return self.surveys_manager.call('SurveyValuesMetadata', name, is_re=is_re, timeout=timeout, limit_peers=limit_peers)
+        return self.surveys_manager.call('SurveyValuesMetadata', names, is_re=is_re, timeout=timeout, limit_peers=limit_peers)
 
     def survey_value_history(self, name, time_period, timeout=0.5, limit_peers=1):
         return self.surveys_manager.call('SurveyValueHistory', name, time_period, timeout=timeout, limit_peers=limit_peers)

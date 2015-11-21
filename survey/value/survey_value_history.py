@@ -17,6 +17,7 @@ class SurveyValueHistory(Survey):
         if name in self.isac_node.isac_values:
             try:
                 self.isac_node.isac_values[name].get_history_impl
+                # TODO: Interface to check if the IV can answer for this time period
             except AttributeError:
                 logger.debug('I know %s but I don\'t have any history for it. Not responding to survey', name)
                 return
@@ -27,6 +28,6 @@ class SurveyValueHistory(Survey):
 
     def process_result(self, results):
         if results:
-            return results[0][1]
+            return results[0][0]
         else:
             return None
