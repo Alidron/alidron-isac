@@ -57,20 +57,6 @@ class IsacValue(object):
         if self.name in self.isac_node.rpc_service.procedures:
             del self.isac_node.rpc_service.procedures[self.name]
 
-    #def register(self, observer):
-    #    if observer not in self._observers:
-    #        logger.debug('Registering %s on %s', observer.__name__, self.name)
-    #        self._observers.append(observer)
-
-    #def unregister(self, observer):
-    #    if observer in self._observers:
-    #        logger.debug('Unregistering %s from %s', observer.__name__, self.name)
-    #        self._observers.remove(observer)
-
-    #def _fire(self, *args, **kwargs):
-    #    for observer in self._observers:
-    #        green.spawn(observer, *args, **kwargs)
-
     @property
     def value(self):
         green.sleep(0.001)
