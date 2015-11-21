@@ -2,13 +2,7 @@ import logging
 import pytest
 import re
 
-green_backend = 'gevent'
-
-if green_backend == 'eventlet':
-    import eventlet as green
-elif green_backend == 'gevent':
-    import gevent as green
-
+from isac.tools import green
 from isac.transport import PyreNode
 
 

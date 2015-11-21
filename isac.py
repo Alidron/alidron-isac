@@ -7,49 +7,16 @@ from datetime import datetime
 from random import randint
 from weakref import WeakValueDictionary
 
-green_backend = 'gevent'
-
-if green_backend == 'eventlet':
-    import eventlet as green
-    from eventlet.green import zmq
-elif green_backend == 'gevent':
-    import gevent as green
-    import zmq.green as zmq
+from .tools import green_backend, green, zmq, Observable
 
 from netcall.green import GreenRPCService as RPCServer
 from netcall.green import GreenRPCClient as RPCClient
 from netcall.green import RemoteRPCError, JSONSerializer
-from netcall import concurrency
-from pyre import Pyre
 
 from .transport import PyreNode
 from .survey import SurveysManager
 
-_tools = concurrency.get_tools(env=green_backend)
-Future = _tools.Future
-Event = _tools.Event
-
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-class Observable(set):
-
-    def __call__(self, *args, **kwargs):
-        for observer in self:
-            green.spawn(observer, *args, **kwargs)
-            #observer(*args, **kwargs)
-
-    def __iadd__(self, observer):
-        self.add(observer)
-        return self
-
-    def __isub__(self, observer):
-        self.remove(observer)
-        return self
-
-    def __repr__(self):
-        return "Event(%s)" % set.__repr__(self)
-
 
 class IsacNode(object):
 

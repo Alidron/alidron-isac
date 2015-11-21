@@ -3,23 +3,11 @@ import logging
 import re
 import uuid
 
-logger = logging.getLogger(__name__)
-
-green_backend = 'gevent'
-
-if green_backend == 'eventlet':
-    import eventlet as green
-    from eventlet.green import zmq
-elif green_backend == 'gevent':
-    import gevent as green
-    import zmq.green as zmq
-
 from pyre import Pyre
-from netcall import concurrency
 
-_tools = concurrency.get_tools(env=green_backend)
-Future = _tools.Future
-Event = _tools.Event
+from ..tools import Event, zmq, green
+
+logger = logging.getLogger(__name__)
 
 class PyreNode(Pyre):
 
