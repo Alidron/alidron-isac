@@ -4,7 +4,7 @@ MAINTAINER Axel Voitier <axel.voitier@gmail.com>
 #RUN pip install prospector
 
 COPY . /usr/src/alidron-isac/isac
-#WORKDIR /usr/src/alidron-isac
+WORKDIR /usr/src/alidron-isac/isac
 
 #ENV PYTHONPATH=/usr/src/alidron-isac
 

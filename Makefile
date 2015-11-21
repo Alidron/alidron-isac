@@ -66,4 +66,4 @@ unittest:
 	docker run --rm --name alidron-isac-unittest $(image_name) py.test -s --cov=isac /usr/src/alidron-isac
 
 unittest-live:
-	docker run --rm --name alidron-isac-unittest -v `pwd`:/usr/src/alidron-isac/isac $(image_name) py.test -s --cov=isac /usr/src/alidron-isac
+	docker run --rm --name alidron-isac-unittest -v `pwd`:/usr/src/alidron-isac/isac $(image_name) py.test -s --cov-report term-missing --cov-config /usr/src/alidron-isac/isac/.coveragerc --cov=isac /usr/src/alidron-isac

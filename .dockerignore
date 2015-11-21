@@ -3,6 +3,7 @@
 .gitignore
 .gitlab-ci.yml
 .cache
+.coverage
 __pycache__
 tests/__pycache__
 *.pyc
