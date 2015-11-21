@@ -3,7 +3,6 @@ import logging
 from .. import Survey
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 class SurveyValueHistory(Survey):
 

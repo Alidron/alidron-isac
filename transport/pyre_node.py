@@ -4,7 +4,6 @@ import re
 import uuid
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 green_backend = 'gevent'
 
@@ -44,17 +43,17 @@ class PyreNode(Pyre):
 
         while self._running:
             try:
-                #logger.debug('Polling')
+                # logger.debug('Polling')
                 items = dict(self.poller.poll(timeout))
-                #logger.debug('polled out: %s, %s', len(items), items)
+                # logger.debug('polled out: %s, %s', len(items), items)
                 while len(items) > 0:
                     for fd, ev in items.items():
                         if (self.inbox == fd) and (ev == zmq.POLLIN):
                             self._process_message()
 
-                    #logger.debug('quick polling')
+                    # logger.debug('quick polling')
                     items = dict(self.poller.poll(0))
-                    #logger.debug('qpoll: %s, %s', len(items), items)
+                    # logger.debug('qpoll: %s, %s', len(items), items)
 
             except (KeyboardInterrupt, SystemExit):
                 logger.debug('KeyboardInterrupt or SystemExit')

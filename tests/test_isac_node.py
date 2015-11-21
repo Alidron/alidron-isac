@@ -1,4 +1,7 @@
+import logging
 from isac import IsacNode
+
+# logging.basicConfig(level=logging.DEBUG)
 
 def test_creation():
     n = IsacNode('test')

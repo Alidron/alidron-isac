@@ -4,7 +4,6 @@ import re
 from .. import Survey
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 class SurveyValuesMetadata(Survey):
 
@@ -29,6 +28,7 @@ class SurveyValuesMetadata(Survey):
                 logger.warning('Malformated regular expression from peer %s: "%s" -> %s', peer_id, match, ex.message)
                 return
             names = filter(match_filter.search, value_names)
+            logger.debug('Found following names: %s', names)
 
         all_metadata = {}
         if names:
@@ -47,7 +47,9 @@ class SurveyValuesMetadata(Survey):
             logger.debug('I don\'t have anything to respond to metadata survey')
 
     def process_result(self, results):
+        logger.debug('Received %s', results)
         all_metadata = {}
         for peer_name, result in results:
             all_metadata.update(result)
+        logger.debug('All metadata: %s', all_metadata)
         return all_metadata
