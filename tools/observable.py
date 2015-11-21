@@ -13,6 +13,3 @@ class Observable(set):
     def __isub__(self, observer):
         self.remove(observer)
         return self
-
-    def __repr__(self):
-        return "Event(%s)" % set.__repr__(self)
