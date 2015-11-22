@@ -1,9 +1,8 @@
-import json
 import logging
 import time
-from .tools import green, Observable
-
 from datetime import datetime
+
+from .tools import green, Observable
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +17,7 @@ class IsacValue(object):
         self.observers = observers
         self.metadata_observers = Observable()
 
-        self.isac_node.rpc_service.register(
+        self.isac_node.rpc.register(
             lambda: (self._value, self.timestamp_float),
             name=self.name
         )
@@ -54,8 +53,7 @@ class IsacValue(object):
         self.isac_node.event_isac_value_entering(self.name)
 
     def __del__(self):
-        if self.name in self.isac_node.rpc_service.procedures:
-            del self.isac_node.rpc_service.procedures[self.name]
+        self.isac_node.rpc.unregister(self.name)
 
     @property
     def value(self):
@@ -121,10 +119,7 @@ class IsacValue(object):
     def publish_value(self, value, ts):
         ts_float = self.timestamp_float
         logger.info('Publishing for %s: %s, %s', self.name, value, ts_float)
-        self.isac_node.pub.send_multipart([
-            self.name,
-            json.dumps((value, ts_float))
-        ])
+        self.isac_node.pub_sub.publish(self.name, (value, ts_float))
 
     def survey_metadata(self):
         self._set_metadata(self.isac_node.survey_value_metadata(self.name))
@@ -140,7 +135,8 @@ class IsacValue(object):
         if isinstance(t2, datetime):
             t2 = time.mktime(t2.timetuple()) + (t2.microsecond * 1e-6)
 
-        data = self.isac_node.rpc_clients[peer_name][1].call('.'.join((self.name, 'get_history_impl')), args=[(t1, t2)])
+        func_name = '.'.join((self.name, 'get_history_impl'))
+        data = self.isac_node.rpc.call_on(peer_name, func_name, (t1, t2))
         return [(point[0], datetime.fromtimestamp(point[1])) for point in data]
 
     def __str__(self):

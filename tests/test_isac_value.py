@@ -206,7 +206,7 @@ class FakeArchivedValue(IsacValue):
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
 
-        self.isac_node.rpc_service.register(
+        self.isac_node.rpc.register(
             self.get_history_impl,
             name='.'.join((self.name, 'get_history_impl'))
         )
