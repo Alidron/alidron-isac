@@ -142,5 +142,18 @@ class IsacValue(object):
     def __str__(self):
         return '{0}: {1}'.format(self.timestamp, self.value)
 
+class ArchivedValue(IsacValue):
+
+    def __init__(self, *args, **kwargs):
+        super(ArchivedValue, self).__init__(*args, **kwargs)
+
+        self.isac_node.rpc.register(
+            self.get_history_impl,
+            name='.'.join((self.name, 'get_history_impl'))
+        )
+
+    def get_history_impl(self, time_period):
+        return []
+
 class NoPeerWithHistoryException(Exception):
     pass

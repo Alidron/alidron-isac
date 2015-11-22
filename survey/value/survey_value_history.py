@@ -15,10 +15,7 @@ class SurveyValueHistory(Survey):
         logger.debug('Survey request for history of value %s', name)
 
         if name in self.isac_node.isac_values:
-            try:
-                self.isac_node.isac_values[name].get_history_impl
-                # TODO: Interface to check if the IV can answer for this time period
-            except AttributeError:
+            if '.'.join((name, 'get_history_impl')) not in self.isac_node.rpc.rpc_service.procedures:
                 logger.debug('I know %s but I don\'t have any history for it. Not responding to survey', name)
                 return
 

@@ -3,7 +3,7 @@ import pytest
 import time
 from random import randint
 
-from isac import IsacNode, IsacValue
+from isac import IsacNode, IsacValue, ArchivedValue
 
 # logging.basicConfig(level=logging.DEBUG)
 
@@ -92,11 +92,7 @@ def test_survey_value_history(two_nodes):
     nA, nB = two_nodes
     time_period = (time.time()-86400, time.time())
 
-    class FakeArchivedValue(IsacValue):
-        def get_history_impl(self, time_period):
-            pass
-
-    archived_iv = FakeArchivedValue(nA, 'archived_iv')
+    archived_iv = ArchivedValue(nA, 'archived_iv')
     simple_iv = IsacValue(nA, 'simple_iv')
 
     assert nB.survey_value_history('simple_iv', (0, 1000)) is None

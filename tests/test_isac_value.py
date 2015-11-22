@@ -3,7 +3,7 @@ import pytest
 from datetime import datetime, timedelta
 from random import randint
 
-from isac import IsacNode, IsacValue, NoPeerWithHistoryException
+from isac import IsacNode, IsacValue, ArchivedValue, NoPeerWithHistoryException
 from isac.tools import green
 
 # logging.basicConfig(level=logging.DEBUG)
@@ -201,15 +201,10 @@ def test_observer(two_nodes):
     assert value == ivA.value
     assert ts == ivA.timestamp
 
-class FakeArchivedValue(IsacValue):
+class FakeArchivedValue(ArchivedValue):
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
-
-        self.isac_node.rpc.register(
-            self.get_history_impl,
-            name='.'.join((self.name, 'get_history_impl'))
-        )
 
         self._test_data = [(0, 10), (1, 10.5), (2, 11),]
         self._test_time_period = None
