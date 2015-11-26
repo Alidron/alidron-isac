@@ -33,6 +33,9 @@ class IsacCmd(cmd.Cmd):
 
     def do_p(self, args):
         green.sleep(0.1)
+        
+    def do_peers(self, args):
+        pp(self.isac_node.transport.peers())
 
     def do_test1(self, args):
         pp(self.isac_node.survey_value_name(args))
