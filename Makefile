@@ -41,14 +41,17 @@ run-bash:
 run:
 	docker run -it --net=$(network_name) --rm $(image_name) python -m isac_cmd hello
 
+run-rpi:
+	docker run -it --net=$(network_name) --rm $(rpi_image_name) python -m isac_cmd hello
+
 run1:
-	docker run -it --net=$(network_name) --rm $(image_name) python -m isac_cmd gdsjkl01 # test01 gdsjkl01
+	docker run -it --net=$(network_name) --rm $(image_name) python isac_cmd.py gdsjkl01 # test01 gdsjkl01
 
 run1-rpi:
 	docker run -it --net=$(network_name) --rm $(rpi_image_name) python -m isac_cmd gdsjkl01 # test01 gdsjkl01
 
 run2:
-	docker run -it --net=$(network_name) --rm $(image_name) python -m isac_cmd fdsfds02 # test02 fdsfds02
+	docker run -it --net=$(network_name) --rm $(image_name) python isac_cmd.py fdsfds02 # test02 fdsfds02
 
 run2-rpi:
 	docker run -it --net=$(network_name) --rm $(rpi_image_name) python -m isac_cmd fdsfds02 # test02 fdsfds02
