@@ -95,27 +95,28 @@ if __name__ == '__main__':
         def notify_isac_value_entering(peer_name, value_name):
             print '>>>>', peer_name, value_name
 
-        if sys.argv[1] in ['test01', 'gdsjkl01']:
-            isac_node.register_isac_value_entering(notify_isac_value_entering)
+        # if sys.argv[1] in ['test01', 'gdsjkl01']:
+        isac_node.register_isac_value_entering(notify_isac_value_entering)
 
 
         if sys.argv[1] in ['test01', 'gdsjkl01']:
             val1 = IsacValue(isac_node, 'this.is.a.test', 12, metadata={'is_read_only': False, 'genre': 'test'})
-        else:
-            val1 = IsacValue(isac_node, 'this.is.a.test')
+        # else:
+        #     val1 = IsacValue(isac_node, 'this.is.a.test')
 
         if sys.argv[1] in ['test02', 'fdsfds02']:
             val2 = IsacValue(isac_node, 'this.is.another.test', 42, metadata={'is_read_only': True, 'genre': 'real'})
-        else:
-            val2 = IsacValue(isac_node, 'this.is.another.test')
+        # else:
+        #     val2 = IsacValue(isac_node, 'this.is.another.test')
 
         def notifyer(name, value, ts):
             print name, value, ts
 
-        val1.observers += notifyer
-        val2.observers += notifyer
+        # val1.observers += notifyer
+        # val2.observers += notifyer
 
-        isac_cmd = IsacCmd(isac_node, {'this.is.a.test': val1, 'this.is.another.test': val2})
+        # isac_cmd = IsacCmd(isac_node, {'this.is.a.test': val1, 'this.is.another.test': val2})
+        isac_cmd = IsacCmd(isac_node, {})
         isac_cmd.cmdloop()
 
     except:
