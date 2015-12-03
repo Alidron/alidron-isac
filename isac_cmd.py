@@ -1,17 +1,17 @@
 # Copyright 2015 - Alidron's authors
 #
 # This file is part of Alidron.
-# 
+#
 # Alidron is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # Alidron is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public License
 # along with Alidron.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -36,10 +36,10 @@ class IsacCmd(cmd.Cmd):
         self.values = values
 
     def do_val1(self, args):
-        print self.values['this.is.a.test']
+        print self.values['test://isac_cmd/this/is/a/test']
 
     def do_val2(self, args):
-        print self.values['this.is.another.test']
+        print self.values['test://isac_cmd/this/is/another/test']
 
     def do_new(self, args):
         self.values[args] = IsacValue(self.isac_node, args)
@@ -50,7 +50,7 @@ class IsacCmd(cmd.Cmd):
 
     def do_p(self, args):
         green.sleep(0.1)
-        
+
     def do_peers(self, args):
         pp(self.isac_node.transport.peers())
 
@@ -73,7 +73,7 @@ class IsacCmd(cmd.Cmd):
         self.values[args].survey_metadata()
 
     def do_test7(self, args):
-        pp(self.isac_node.survey_values_metadata('ozw\..*', is_re=True, limit_peers=1))
+        pp(self.isac_node.survey_values_metadata('ozw/.*', is_re=True, limit_peers=1))
 
     def do_history(self, args):
         pp(self.values[args].get_history((time.time()-86400, time.time())))
@@ -103,7 +103,7 @@ class IsacCmd(cmd.Cmd):
 if __name__ == '__main__':
     isac_node = IsacNode(sys.argv[1])
 
-    val = IsacValue(isac_node, 'ozw.dimmer001.switch_binary.switch')
+    val = IsacValue(isac_node, 'switch://dimer001/switch_binary/switch')
     green.sleep(0.1)
     val.value = not val.value
     green.sleep(0.1)
@@ -117,12 +117,12 @@ if __name__ == '__main__':
 
 
         if sys.argv[1] in ['test01', 'gdsjkl01']:
-            val1 = IsacValue(isac_node, 'this.is.a.test', 12, metadata={'is_read_only': False, 'genre': 'test'})
+            val1 = IsacValue(isac_node, 'test://isac_cmd/this/is/a/test', 12, metadata={'is_read_only': False, 'genre': 'test'})
         # else:
         #     val1 = IsacValue(isac_node, 'this.is.a.test')
 
         if sys.argv[1] in ['test02', 'fdsfds02']:
-            val2 = IsacValue(isac_node, 'this.is.another.test', 42, metadata={'is_read_only': True, 'genre': 'real'})
+            val2 = IsacValue(isac_node, 'test://isac_cmd/this/is/another/test', 42, metadata={'is_read_only': True, 'genre': 'real'})
         # else:
         #     val2 = IsacValue(isac_node, 'this.is.another.test')
 

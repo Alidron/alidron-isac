@@ -1,17 +1,17 @@
 # Copyright 2015 - Alidron's authors
 #
 # This file is part of Alidron.
-# 
+#
 # Alidron is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # Alidron is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public License
 # along with Alidron.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -48,19 +48,20 @@ def test_isac_value_entering_event(two_nodes):
     obs = Observer()
 
     nB.register_isac_value_entering(obs.callback)
-    nA.event_isac_value_entering('test')
+    uri = 'test://test_event_value/test_isac_value_entering_event/test'
+    nA.event_isac_value_entering(uri)
 
     green.sleep(0.25)
 
     assert obs.args, 'Callback not called'
-    assert obs.args == ('testA', 'test')
+    assert obs.args == ('testA', uri)
 
     nB.unregister_isac_value_entering(obs.callback)
-    nA.event_isac_value_entering('test2')
+    nA.event_isac_value_entering(uri + '2')
 
     green.sleep(0.25)
 
-    assert obs.args == ('testA', 'test')
+    assert obs.args == ('testA', uri)
 
 class FakeIsacValue(object):
 
@@ -77,8 +78,9 @@ def test_value_metadata_update_event(two_nodes):
 
     green.sleep(0.25)
 
-    nB.isac_values['test'] = fake_iv
-    nA.event_value_metadata_update('test', {'this is': 'metadata'})
+    uri = 'test://test_event_value/test_value_metadata_update_event/test'
+    nB.isac_values[uri] = fake_iv
+    nA.event_value_metadata_update(uri, {'this is': 'metadata'})
 
     green.sleep(0.25)
 

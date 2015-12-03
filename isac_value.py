@@ -1,17 +1,17 @@
 # Copyright 2015 - Alidron's authors
 #
 # This file is part of Alidron.
-# 
+#
 # Alidron is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # Alidron is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public License
 # along with Alidron.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -25,26 +25,26 @@ logger = logging.getLogger(__name__)
 
 class IsacValue(object):
 
-    def __init__(self, isac_node, name, initial_value=None, metadata=None, observers=Observable()):
+    def __init__(self, isac_node, uri, initial_value=None, metadata=None, observers=Observable()):
         ts = datetime.now()
 
         self.isac_node = isac_node
-        self.name = name
+        self.uri = uri
         self._metadata = metadata
         self.observers = observers
         self.metadata_observers = Observable()
 
         self.isac_node.rpc.register(
             lambda: (self._value, self.timestamp_float),
-            name=self.name
+            name=self.uri
         )
 
         self._value = initial_value
         if initial_value is None:
             self._value, self._timestamp = None, datetime.fromtimestamp(0)
-            self.update_value_from_isac(*self.isac_node.survey_last_value(self.name, limit_peers=1))
+            self.update_value_from_isac(*self.isac_node.survey_last_value(self.uri, limit_peers=1))
         elif isinstance(initial_value, tuple):
-            last_value, last_ts_float = self.isac_node.survey_last_value(self.name, limit_peers=1)
+            last_value, last_ts_float = self.isac_node.survey_last_value(self.uri, limit_peers=1)
 
             if isinstance(initial_value[1], datetime):
                 last_ts = datetime.fromtimestamp(last_ts_float)
@@ -61,16 +61,16 @@ class IsacValue(object):
             logger.debug('publishing value', initial_value)
             self.value_ts = initial_value, ts
 
-        #print '>>>>>', self.name, id(self), type(self._metadata), self._metadata
+        #print '>>>>>', self.uri, id(self), type(self._metadata), self._metadata
         if self._metadata:
-            self.isac_node.event_value_metadata_update(self.name, self._metadata)
+            self.isac_node.event_value_metadata_update(self.uri, self._metadata)
 
-        self.isac_node.subscribe(name, self)
+        self.isac_node.subscribe(self.uri, self)
 
-        self.isac_node.event_isac_value_entering(self.name)
+        self.isac_node.event_isac_value_entering(self.uri)
 
     def __del__(self):
-        self.isac_node.rpc.unregister(self.name)
+        self.isac_node.rpc.unregister(self.uri)
 
     @property
     def value(self):
@@ -114,7 +114,7 @@ class IsacValue(object):
     @metadata.setter
     def metadata(self, metadata):
         self._metadata = metadata
-        self.isac_node.event_value_metadata_update(self.name, self._metadata)
+        self.isac_node.event_value_metadata_update(self.uri, self._metadata)
 
     def _set_metadata(self, metadata):
         if not metadata:
@@ -122,29 +122,29 @@ class IsacValue(object):
 
         self._metadata = metadata
         if self._metadata:
-            self.metadata_observers(self.name, self._metadata)
+            self.metadata_observers(self.uri, self._metadata)
 
     def update_value_from_isac(self, new_value, ts_float):
         if ts_float > self.timestamp_float:
             self._value = new_value
             self._timestamp = datetime.fromtimestamp(ts_float)
-            self.observers(self.name, self._value, self._timestamp)
+            self.observers(self.uri, self._value, self._timestamp)
         elif ts_float < self.timestamp_float:
-            logger.warning('Trying to update value %s with a value older than what we have (%f vs. %f)', self.name, ts_float, self.timestamp_float)
+            logger.warning('Trying to update value %s with a value older than what we have (%f vs. %f)', self.uri, ts_float, self.timestamp_float)
         # else equal time => do nothing
 
     def publish_value(self, value, ts):
         ts_float = self.timestamp_float
-        logger.info('Publishing for %s: %s, %s', self.name, value, ts_float)
-        self.isac_node.pub_sub.publish(self.name, (value, ts_float))
+        logger.info('Publishing for %s: %s, %s', self.uri, value, ts_float)
+        self.isac_node.pub_sub.publish(self.uri, (value, ts_float))
 
     def survey_metadata(self):
-        self._set_metadata(self.isac_node.survey_value_metadata(self.name))
+        self._set_metadata(self.isac_node.survey_value_metadata(self.uri))
 
     def get_history(self, time_period):
-        peer_name = self.isac_node.survey_value_history(self.name, time_period)
+        peer_name = self.isac_node.survey_value_history(self.uri, time_period)
         if not peer_name:
-            raise NoPeerWithHistoryException('Could not find any peer that could provide history for %s' % self.name)
+            raise NoPeerWithHistoryException('Could not find any peer that could provide history for %s' % self.uri)
 
         t1, t2 = time_period
         if isinstance(t1, datetime):
@@ -152,7 +152,7 @@ class IsacValue(object):
         if isinstance(t2, datetime):
             t2 = time.mktime(t2.timetuple()) + (t2.microsecond * 1e-6)
 
-        func_name = '.'.join((self.name, 'get_history_impl'))
+        func_name = '.'.join((self.uri, 'get_history_impl'))
         data = self.isac_node.rpc.call_on(peer_name, func_name, (t1, t2))
         return [(point[0], datetime.fromtimestamp(point[1])) for point in data]
 
@@ -166,7 +166,7 @@ class ArchivedValue(IsacValue):
 
         self.isac_node.rpc.register(
             self.get_history_impl,
-            name='.'.join((self.name, 'get_history_impl'))
+            name='.'.join((self.uri, 'get_history_impl'))
         )
 
     def get_history_impl(self, time_period):

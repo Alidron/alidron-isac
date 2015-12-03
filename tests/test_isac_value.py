@@ -1,17 +1,17 @@
 # Copyright 2015 - Alidron's authors
 #
 # This file is part of Alidron.
-# 
+#
 # Alidron is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # Alidron is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public License
 # along with Alidron.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -51,29 +51,31 @@ def test_creation_double():
     nA = IsacNode('A')
     nB = IsacNode('B')
 
+    uri = 'test://test_isac_value/test_creation_double/my_value'
     try:
-        ivA = IsacValue(nA, 'my_value')
-        ivB = IsacValue(nB, 'my_value')
+        ivA = IsacValue(nA, uri)
+        ivB = IsacValue(nB, uri)
     finally:
         nA.shutdown()
         nB.shutdown()
 
 @pytest.mark.xfail
 def test_weakref(one_node):
-    iv = IsacValue(one_node, 'test_iv')
+    iv = IsacValue(one_node, 'test://test_isac_value/test_weakref/test_iv')
     del iv
     assert one_node.isac_values.valuerefs() == []
 
 def test_creation_no_init(two_nodes):
     nA, nB = two_nodes
 
-    ivA = IsacValue(nA, 'test_no_init')
+    uri = 'test://test_isac_value/test_creation_no_init/test_no_init'
+    ivA = IsacValue(nA, uri)
     assert ivA.value == None
     assert ivA.timestamp == datetime(1970, 1, 1, 0, 0)
     assert ivA.metadata == None
 
     ivA.value = randint(0, 100)
-    ivB = IsacValue(nB, 'test_no_init')
+    ivB = IsacValue(nB, uri)
     assert ivB.value == ivA.value
     assert ivB.timestamp == ivA.timestamp
     assert ivB.metadata == None
@@ -81,13 +83,14 @@ def test_creation_no_init(two_nodes):
 def test_creation_with_init(two_nodes):
     nA, nB = two_nodes
 
+    uri = 'test://test_isac_value/test_creation_with_init/test_with_init'
     v = randint(0, 100)
-    ivA = IsacValue(nA, 'test_with_init', v)
+    ivA = IsacValue(nA, uri, v)
     assert ivA.value == v
     assert ivA.metadata == None
     t = ivA.timestamp
 
-    ivB = IsacValue(nB, 'test_with_init')
+    ivB = IsacValue(nB, uri)
     assert ivB.value == v
     assert ivB.timestamp == t
     assert ivB.metadata == None
@@ -95,16 +98,17 @@ def test_creation_with_init(two_nodes):
 def test_creation_with_full_init(two_nodes):
     nA, nB = two_nodes
 
+    uri = 'test://test_isac_value/test_creation_with_full_init/test_with_full_init'
     v1 = randint(0, 100)
     ts1 = datetime.now() - timedelta(hours=1)
-    ivA = IsacValue(nA, 'test_with_full_init', (v1, ts1))
+    ivA = IsacValue(nA, uri, (v1, ts1))
     assert ivA.value == v1
     assert ivA.timestamp == ts1
     assert ivA.metadata == None
 
     v2 = v1 + 10
     ts2 = datetime.now() - timedelta(hours=2)
-    ivB = IsacValue(nB, 'test_with_full_init', (v2, ts2))
+    ivB = IsacValue(nB, uri, (v2, ts2))
     assert ivB.value == v1
     assert ivB.timestamp == ts1
     assert ivB.metadata == None
@@ -115,7 +119,7 @@ def test_creation_with_full_init(two_nodes):
     ivB = None
     v3 = v2 + 10
     ts3 = datetime.now()
-    ivB = IsacValue(nB, 'test_with_full_init', (v3, ts3))
+    ivB = IsacValue(nB, uri, (v3, ts3))
     assert ivB.value == v3
     assert ivB.timestamp == ts3
     assert ivB.metadata == None
@@ -126,13 +130,14 @@ def test_creation_with_full_init(two_nodes):
 def test_creation_metadata(two_nodes):
     nA, nB = two_nodes
 
+    uri = 'test://test_isac_value/test_creation_metadata/test_metadata'
     metadata = {'this': 'is', 'meta': 'data'}
-    ivA = IsacValue(nA, 'test_metadata', metadata=metadata)
+    ivA = IsacValue(nA, uri, metadata=metadata)
     assert ivA.value == None
     assert ivA.timestamp == datetime(1970, 1, 1, 0, 0)
     assert ivA.metadata == metadata
 
-    ivB = IsacValue(nB, 'test_metadata')
+    ivB = IsacValue(nB, uri)
     assert ivB.value == None
     assert ivB.timestamp == datetime(1970, 1, 1, 0, 0)
     assert ivB.metadata == None
@@ -146,8 +151,9 @@ def test_creation_metadata(two_nodes):
 def test_property_value_ts(two_nodes):
     nA, nB = two_nodes
 
-    ivA = IsacValue(nA, 'test_property_value_ts')
-    ivB = IsacValue(nB, 'test_property_value_ts')
+    uri = 'test://test_isac_value/test_property_value_ts/test_property_value_ts'
+    ivA = IsacValue(nA, uri)
+    ivB = IsacValue(nB, uri)
     assert ivA.value == None
     assert ivA.timestamp == datetime(1970, 1, 1, 0, 0)
     assert ivA.timestamp_float == 0
@@ -182,8 +188,9 @@ def test_property_value_ts(two_nodes):
 def test_property_metadata(two_nodes):
     nA, nB = two_nodes
 
-    ivA = IsacValue(nA, 'test_property_metadata')
-    ivB = IsacValue(nB, 'test_property_metadata')
+    uri = 'test://test_isac_value/test_property_metadata/test_property_metadata'
+    ivA = IsacValue(nA, uri)
+    ivB = IsacValue(nB, uri)
     assert ivA.metadata == None
     assert ivB.metadata == None
 
@@ -207,14 +214,15 @@ def test_observer(two_nodes):
     nA, nB = two_nodes
     obs = Observer()
 
-    ivA = IsacValue(nA, 'test_observer')
-    ivB = IsacValue(nB, 'test_observer')
+    uri = 'test://test_isac_value/test_observer/test_observer'
+    ivA = IsacValue(nA, uri)
+    ivB = IsacValue(nB, uri)
     ivB.observers += obs.observer
     ivA.value = randint(0, 100)
     green.sleep(0.5)
     assert obs.args, 'Callback not received'
-    name, value, ts = obs.args
-    assert name == 'test_observer'
+    uri_recv, value, ts = obs.args
+    assert uri_recv == uri
     assert value == ivA.value
     assert ts == ivA.timestamp
 
@@ -233,8 +241,9 @@ class FakeArchivedValue(ArchivedValue):
 def test_history(two_nodes):
     nA, nB = two_nodes
 
-    ivA = IsacValue(nA, 'test_history')
-    ivB = FakeArchivedValue(nB, 'test_history')
+    uri = 'test://test_isac_value/test_history/test_history'
+    ivA = IsacValue(nA, uri)
+    ivB = FakeArchivedValue(nB, uri)
     time_period = (0, 20)
     data = ivA.get_history(time_period)
     data_fixture_converted = [(point[0], datetime.fromtimestamp(point[1])) for point in ivB._test_data]
