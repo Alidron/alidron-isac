@@ -1,17 +1,17 @@
 # Copyright 2015 - Alidron's authors
 #
 # This file is part of Alidron.
-# 
+#
 # Alidron is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # Alidron is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public License
 # along with Alidron.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -63,7 +63,7 @@ class IsacNode(object):
 
     def _sub_callback(self, name, data):
         logger.debug('Received update for %s', name)
-        logger.debug('Value is %s', data)
+        logger.debug('Data is %s', data)
 
         if name in self.isac_values:
             isac_value = self.isac_values[name]
@@ -74,6 +74,9 @@ class IsacNode(object):
 
     def survey_last_value(self, name, timeout=0.5, limit_peers=3):
         return self.surveys_manager.call('SurveyLastValue', name, timeout=timeout, limit_peers=limit_peers)
+
+    def survey_value_static_tags(self, uri, timeout=0.5, limit_peers=1):
+        return self.surveys_manager.call('SurveyValueStaticTags', uri, timeout=timeout, limit_peers=limit_peers)
 
     def survey_value_metadata(self, name, timeout=0.5, limit_peers=1):
         return self.surveys_manager.call('SurveyValueMetadata', name, timeout=timeout, limit_peers=limit_peers)

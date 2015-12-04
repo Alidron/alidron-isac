@@ -43,14 +43,14 @@ def test_survey_last_value(two_nodes):
     iv = IsacValue(nA, uri)
 
     # Uninitialised/new value have a None value at time 0
-    assert nB.survey_last_value(uri, limit_peers=1) == (None, 0)
+    assert nB.survey_last_value(uri, limit_peers=1) == (None, 0, None)
 
     iv.value = randint(0, 100)
-    assert nB.survey_last_value(uri, limit_peers=1) == (iv.value, iv.timestamp_float)
+    assert nB.survey_last_value(uri, limit_peers=1) == (iv.value, iv.timestamp_float, None)
 
     # Inexistent value are not an error, they simply return None at time 0
     # (That is actually what give the default state of an uninitialised/new value behind the scene)
-    assert nB.survey_last_value('test://test_survey_value/test_survey_last_value/inexistent', limit_peers=1) == (None, 0)
+    assert nB.survey_last_value('test://test_survey_value/test_survey_last_value/inexistent', limit_peers=1) == (None, 0, None)
 
 def test_survey_value_name(two_nodes):
     nA, nB = two_nodes
@@ -72,6 +72,18 @@ def test_survey_value_name(two_nodes):
     # Wrong RE should return an empty set AND not cause remote nodes to crash
     assert nB.survey_value_name('*', limit_peers=1) == set([])
     assert nB.survey_value_name('', limit_peers=1) >= set(['iv1', 'iv2']), 'Remote node crashed'
+
+def test_survey_value_static_tags(two_nodes):
+    nA, nB = two_nodes
+
+    uri_nostatictags = 'test://test_survey_value/test_survey_value_static_tags/iv_nostatictags'
+    iv_nostatictags = IsacValue(nA, uri_nostatictags)
+    uri_statictags = 'test://test_survey_value/test_survey_value_static_tags/iv_statictags'
+    iv_statictags = IsacValue(nA, uri_statictags, static_tags={'this': 'is', 'static': 'tags'})
+
+    assert nB.survey_value_static_tags(uri_nostatictags) is None
+    assert nB.survey_value_static_tags('test://test_survey_value/test_survey_value_static_tags/unknown') is None
+    assert nB.survey_value_static_tags(uri_statictags) == iv_statictags.static_tags
 
 def test_survey_value_metadata(two_nodes):
     nA, nB = two_nodes

@@ -21,31 +21,28 @@ from .. import Survey
 
 logger = logging.getLogger(__name__)
 
-class SurveyLastValue(Survey):
+class SurveyValueStaticTags(Survey):
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
 
-        self.limit_peers = 3
+        self.limit_peers = 1
 
-    def process_request(self, peer_id, request_id, name):
-        logger.debug('Survey request for last value of %s', name)
+    def process_request(self, peer_id, request_id, uri):
+        logger.info('Survey request for static tags of %s', uri)
 
-        if name in self.isac_node.isac_values:
-            isac_value = self.isac_node.isac_values[name]
-            logger.debug('Responding to survey for %s: (%s) %s', name, isac_value.timestamp, isac_value.value)
-            self.reply(peer_id, request_id, (isac_value.value, isac_value.timestamp_float, isac_value.tags))
+        if uri in self.isac_node.isac_values:
+            isac_value = self.isac_node.isac_values[uri]
+            if isac_value.static_tags:
+                logger.info('Responding to static tags survey for %s', uri)
+                self.reply(peer_id, request_id, isac_value.static_tags)
+            else:
+                logger.info('I know %s but I don\'t have any static tags for it', uri)
         else:
-            logger.debug('I don\'t know %s, not responding', name)
+            logger.info('I don\'t know %s, not responding', uri)
 
     def process_result(self, results):
-        max_ts = 0.0
-        max_value = None
-        max_tags = None
-        for peer_name, result in results:
-            value, ts, tags = result
-            if ts > max_ts:
-                max_ts = ts
-                max_value = value
-                max_tags = tags
-        return max_value, max_ts, max_tags
+        if results:
+            return results[0][1]
+        else:
+            return None
