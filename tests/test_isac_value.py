@@ -328,11 +328,13 @@ def test_observer(two_nodes):
     ivA.value = randint(0, 100)
     green.sleep(0.5)
     assert obs.args, 'Callback not received'
-    uri_recv, value, ts, tags = obs.args
+    uri_recv, value, ts, tags, peer_name, peer_uuid = obs.args
     assert uri_recv == uri
     assert value == ivA.value
     assert ts == ivA.timestamp
     assert tags == ivA.tags
+    assert peer_name == nA.name_uuid()[0]
+    assert peer_uuid == nA.name_uuid()[1]
 
 class FakeArchivedValue(ArchivedValue):
 

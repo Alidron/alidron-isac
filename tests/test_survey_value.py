@@ -43,14 +43,14 @@ def test_survey_last_value(two_nodes):
     iv = IsacValue(nA, uri, survey_last_value=False, survey_static_tags=False)
 
     # Uninitialised/new value have a None value at time 0
-    assert nB.survey_last_value(uri, limit_peers=1) == (None, 0, None)
+    assert nB.survey_last_value(uri, limit_peers=1) == (None, 0, None, None, None)
 
     iv.value = randint(0, 100)
-    assert nB.survey_last_value(uri, limit_peers=1) == (iv.value, iv.timestamp_float, None)
+    assert nB.survey_last_value(uri, limit_peers=1) == (iv.value, iv.timestamp_float, None) + nA.name_uuid()
 
     # Inexistent value are not an error, they simply return None at time 0
     # (That is actually what give the default state of an uninitialised/new value behind the scene)
-    assert nB.survey_last_value('test://test_survey_value/test_survey_last_value/inexistent', limit_peers=1) == (None, 0, None)
+    assert nB.survey_last_value('test://test_survey_value/test_survey_last_value/inexistent', limit_peers=1) == (None, 0, None, None, None)
 
 def test_survey_value_uri(two_nodes):
     nA, nB = two_nodes
