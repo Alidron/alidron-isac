@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Alidron.  If not, see <http://www.gnu.org/licenses/>.
 
-from .survey_value_name import SurveyValueName
+from .survey_value_uri import SurveyValueUri
 from .survey_last_value import SurveyLastValue
 from .survey_value_static_tags import SurveyValueStaticTags
 from .survey_value_metadata import SurveyValueMetadata
@@ -23,7 +23,7 @@ from .survey_values_metadata import SurveyValuesMetadata
 from .survey_value_history import SurveyValueHistory
 
 __all__ = [
-    'SurveyValueName',
+    'SurveyValueUri',
     'SurveyLastValue',
     'SurveyValueStaticTags',
     'SurveyValueMetadata',

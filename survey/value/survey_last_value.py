@@ -28,15 +28,15 @@ class SurveyLastValue(Survey):
 
         self.limit_peers = 3
 
-    def process_request(self, peer_id, request_id, name):
-        logger.debug('Survey request for last value of %s', name)
+    def process_request(self, peer_id, request_id, uri):
+        logger.debug('Survey request for last value of %s', uri)
 
-        if name in self.isac_node.isac_values:
-            isac_value = self.isac_node.isac_values[name]
-            logger.debug('Responding to survey for %s: (%s) %s', name, isac_value.timestamp, isac_value.value)
+        if uri in self.isac_node.isac_values:
+            isac_value = self.isac_node.isac_values[uri]
+            logger.debug('Responding to survey for %s: (%s) %s', uri, isac_value.timestamp, isac_value.value)
             self.reply(peer_id, request_id, (isac_value.value, isac_value.timestamp_float, isac_value.tags))
         else:
-            logger.debug('I don\'t know %s, not responding', name)
+            logger.debug('I don\'t know %s, not responding', uri)
 
     def process_result(self, results):
         max_ts = 0.0

@@ -52,26 +52,26 @@ def test_survey_last_value(two_nodes):
     # (That is actually what give the default state of an uninitialised/new value behind the scene)
     assert nB.survey_last_value('test://test_survey_value/test_survey_last_value/inexistent', limit_peers=1) == (None, 0, None)
 
-def test_survey_value_name(two_nodes):
+def test_survey_value_uri(two_nodes):
     nA, nB = two_nodes
 
     iv1 = IsacValue(nA, 'iv1')
     iv2 = IsacValue(nA, 'iv2')
 
-    assert nB.survey_value_name('', limit_peers=1) >= set(['iv1', 'iv2'])
-    assert nB.survey_value_name('i', limit_peers=1) >= set(['iv1', 'iv2'])
-    assert nB.survey_value_name('v', limit_peers=1) >= set(['iv1', 'iv2'])
-    assert nB.survey_value_name('1', limit_peers=1) >= set(['iv1'])
-    assert nB.survey_value_name('2', limit_peers=1) >= set(['iv2'])
-    assert nB.survey_value_name('^i', limit_peers=1) >= set(['iv1', 'iv2'])
-    assert nB.survey_value_name('[1|2]$', limit_peers=1) >= set(['iv1', 'iv2'])
-    assert nB.survey_value_name('^.*1', limit_peers=1) >= set(['iv1'])
-    assert nB.survey_value_name('^v', limit_peers=1) == set([])
-    assert nB.survey_value_name('nothing', limit_peers=1) == set([])
+    assert nB.survey_value_uri('', limit_peers=1) >= set(['iv1', 'iv2'])
+    assert nB.survey_value_uri('i', limit_peers=1) >= set(['iv1', 'iv2'])
+    assert nB.survey_value_uri('v', limit_peers=1) >= set(['iv1', 'iv2'])
+    assert nB.survey_value_uri('1', limit_peers=1) >= set(['iv1'])
+    assert nB.survey_value_uri('2', limit_peers=1) >= set(['iv2'])
+    assert nB.survey_value_uri('^i', limit_peers=1) >= set(['iv1', 'iv2'])
+    assert nB.survey_value_uri('[1|2]$', limit_peers=1) >= set(['iv1', 'iv2'])
+    assert nB.survey_value_uri('^.*1', limit_peers=1) >= set(['iv1'])
+    assert nB.survey_value_uri('^v', limit_peers=1) == set([])
+    assert nB.survey_value_uri('nothing', limit_peers=1) == set([])
 
     # Wrong RE should return an empty set AND not cause remote nodes to crash
-    assert nB.survey_value_name('*', limit_peers=1) == set([])
-    assert nB.survey_value_name('', limit_peers=1) >= set(['iv1', 'iv2']), 'Remote node crashed'
+    assert nB.survey_value_uri('*', limit_peers=1) == set([])
+    assert nB.survey_value_uri('', limit_peers=1) >= set(['iv1', 'iv2']), 'Remote node crashed'
 
 def test_survey_value_static_tags(two_nodes):
     nA, nB = two_nodes

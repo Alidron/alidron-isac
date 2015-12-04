@@ -61,34 +61,34 @@ class IsacNode(object):
         self.isac_values[topic] = isac_value
         self.pub_sub.subscribe(topic, isac_value)
 
-    def _sub_callback(self, name, data):
-        logger.debug('Received update for %s', name)
+    def _sub_callback(self, uri, data):
+        logger.debug('Received update for %s', uri)
         logger.debug('Data is %s', data)
 
-        if name in self.isac_values:
-            isac_value = self.isac_values[name]
+        if uri in self.isac_values:
+            isac_value = self.isac_values[uri]
             isac_value.update_value_from_isac(*data)
 
-    def survey_value_name(self, match, timeout=0.5, limit_peers=0):
-        return self.surveys_manager.call('SurveyValueName', match, timeout=timeout, limit_peers=limit_peers)
+    def survey_value_uri(self, match, timeout=0.5, limit_peers=0):
+        return self.surveys_manager.call('SurveyValueUri', match, timeout=timeout, limit_peers=limit_peers)
 
-    def survey_last_value(self, name, timeout=0.5, limit_peers=3):
-        return self.surveys_manager.call('SurveyLastValue', name, timeout=timeout, limit_peers=limit_peers)
+    def survey_last_value(self, uri, timeout=0.5, limit_peers=3):
+        return self.surveys_manager.call('SurveyLastValue', uri, timeout=timeout, limit_peers=limit_peers)
 
     def survey_value_static_tags(self, uri, timeout=0.5, limit_peers=1):
         return self.surveys_manager.call('SurveyValueStaticTags', uri, timeout=timeout, limit_peers=limit_peers)
 
-    def survey_value_metadata(self, name, timeout=0.5, limit_peers=1):
-        return self.surveys_manager.call('SurveyValueMetadata', name, timeout=timeout, limit_peers=limit_peers)
+    def survey_value_metadata(self, uri, timeout=0.5, limit_peers=1):
+        return self.surveys_manager.call('SurveyValueMetadata', uri, timeout=timeout, limit_peers=limit_peers)
 
-    def survey_values_metadata(self, names, is_re=False, timeout=0.5, limit_peers=1):
-        return self.surveys_manager.call('SurveyValuesMetadata', names, is_re=is_re, timeout=timeout, limit_peers=limit_peers)
+    def survey_values_metadata(self, uris, is_re=False, timeout=0.5, limit_peers=1):
+        return self.surveys_manager.call('SurveyValuesMetadata', uris, is_re=is_re, timeout=timeout, limit_peers=limit_peers)
 
-    def survey_value_history(self, name, time_period, timeout=0.5, limit_peers=1):
-        return self.surveys_manager.call('SurveyValueHistory', name, time_period, timeout=timeout, limit_peers=limit_peers)
+    def survey_value_history(self, uri, time_period, timeout=0.5, limit_peers=1):
+        return self.surveys_manager.call('SurveyValueHistory', uri, time_period, timeout=timeout, limit_peers=limit_peers)
 
-    def event_isac_value_entering(self, value_name):
-        self.events_manager.send('IsacValueEnteringEvent', value_name)
+    def event_isac_value_entering(self, value_uri):
+        self.events_manager.send('IsacValueEnteringEvent', value_uri)
 
     def register_isac_value_entering(self, observer):
         self.events_manager.call('IsacValueEnteringEvent', 'register_observer', observer)
@@ -96,8 +96,8 @@ class IsacNode(object):
     def unregister_isac_value_entering(self, observer):
         self.events_manager.call('IsacValueEnteringEvent', 'unregister_observer', observer)
 
-    def event_value_metadata_update(self, value_name, metadata):
-        self.events_manager.send('ValueMetadataUpdateEvent', value_name, metadata)
+    def event_value_metadata_update(self, value_uri, metadata):
+        self.events_manager.send('ValueMetadataUpdateEvent', value_uri, metadata)
 
     def _on_new_peer(self, peer_id, peer_name, pub_endpoint, rpc_endpoint):
         logger.debug('New peer: %s, %d', peer_name, peer_id)
