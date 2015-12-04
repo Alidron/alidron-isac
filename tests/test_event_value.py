@@ -18,7 +18,7 @@
 import logging
 import pytest
 
-from isac import IsacNode, IsacValue
+from isac import IsacNode
 from isac.tools import green
 
 # logging.basicConfig(level=logging.DEBUG)
