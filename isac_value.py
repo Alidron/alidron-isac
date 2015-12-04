@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 class IsacValue(object):
 
-    def __init__(self, isac_node, uri, initial_value=None, static_tags=None, dynamic_tags=None, metadata=None, observers=Observable()):
+    def __init__(self, isac_node, uri, initial_value=None, static_tags=None, dynamic_tags=None, metadata=None, observers=Observable(), survey_last_value=True, survey_static_tags=True):
         ts = datetime.now()
 
         self.isac_node = isac_node
@@ -44,26 +44,33 @@ class IsacValue(object):
         self._value = initial_value
         if initial_value is None:
             self._value, self._timestamp = None, datetime.fromtimestamp(0)
-            self.update_value_from_isac(*self.isac_node.survey_last_value(self.uri, limit_peers=1))
+            if survey_last_value:
+                self.update_value_from_isac(*self.isac_node.survey_last_value(self.uri, limit_peers=1))
+
         elif isinstance(initial_value, tuple):
-            last_value, last_ts_float, tags = self.isac_node.survey_last_value(self.uri, limit_peers=1)
-
-            if isinstance(initial_value[1], datetime):
-                last_ts = datetime.fromtimestamp(last_ts_float)
-            else:
-                last_ts = last_ts_float
-
-            if initial_value[1] > last_ts: # We want to publish our last value to anyone outside
-                logger.debug('publishing former value', initial_value)
+            if not survey_last_value:
                 self.value_ts = initial_value
-            else: # We want to notify all our internal subscribers of the newer last value
-                self._value, self._timestamp = None, datetime.fromtimestamp(0)
-                self.update_value_from_isac(last_value, last_ts_float, tags)
+
+            else:
+                last_value, last_ts_float, tags = self.isac_node.survey_last_value(self.uri, limit_peers=1)
+
+                if isinstance(initial_value[1], datetime):
+                    last_ts = datetime.fromtimestamp(last_ts_float)
+                else:
+                    last_ts = last_ts_float
+
+                if initial_value[1] > last_ts: # We want to publish our last value to anyone outside
+                    logger.debug('publishing former value', initial_value)
+                    self.value_ts = initial_value
+                else: # We want to notify all our internal subscribers of the newer last value
+                    self._value, self._timestamp = None, datetime.fromtimestamp(0)
+                    self.update_value_from_isac(last_value, last_ts_float, tags)
+
         else:
             logger.debug('publishing value', initial_value)
             self.value_ts = initial_value, ts
 
-        if not self._static_tags:
+        if not self._static_tags and survey_static_tags:
             self._static_tags = self.isac_node.survey_value_static_tags(self.uri)
 
         #print '>>>>>', self.uri, id(self), type(self._metadata), self._metadata
