@@ -229,7 +229,7 @@ class IsacValue(object):
 
         func_name = '.'.join((self.uri, 'get_history_impl'))
         data = self.isac_node.rpc.call_on(peer_name, func_name, (t1, t2))
-        return [(point[0], datetime.fromtimestamp(point[1])) for point in data]
+        return [(point[0], datetime.fromtimestamp(point[1]), point[2], point[3], point[4]) for point in data]
 
     def __str__(self):
         return '{0}: {1}'.format(self.timestamp, self.value)

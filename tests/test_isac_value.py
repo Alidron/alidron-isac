@@ -341,7 +341,11 @@ class FakeArchivedValue(ArchivedValue):
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
 
-        self._test_data = [(0, 10), (1, 10.5), (2, 11),]
+        self._test_data = [
+            (0, 10, None, 'testA', '123456'),
+            (1, 10.5, {'this': 'is'}, 'testA', '123456'),
+            (2, 11, {'a': 'tag'}, 'testA', '123456'),
+        ]
         self._test_time_period = None
 
     def get_history_impl(self, time_period):
@@ -356,7 +360,7 @@ def test_history(two_nodes):
     ivB = FakeArchivedValue(nB, uri, survey_static_tags=False)
     time_period = (0, 20)
     data = ivA.get_history(time_period)
-    data_fixture_converted = [(point[0], datetime.fromtimestamp(point[1])) for point in ivB._test_data]
+    data_fixture_converted = [(point[0], datetime.fromtimestamp(point[1]), point[2], point[3], point[4]) for point in ivB._test_data]
     assert ivB._test_time_period, 'History callback not called'
     assert ivB._test_time_period == list(time_period)
     assert data == data_fixture_converted
