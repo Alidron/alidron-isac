@@ -72,12 +72,16 @@ def test_creation_no_init(two_nodes):
     ivA = IsacValue(nA, uri, survey_static_tags=False)
     assert ivA.value == None
     assert ivA.timestamp == datetime(1970, 1, 1, 0, 0)
+    assert ivA.static_tags == {}
+    assert ivA.tags == {}
     assert ivA.metadata == None
 
     ivA.value = randint(0, 100)
     ivB = IsacValue(nB, uri, survey_static_tags=False)
     assert ivB.value == ivA.value
     assert ivB.timestamp == ivA.timestamp
+    assert ivB.static_tags == {}
+    assert ivB.tags == {}
     assert ivB.metadata == None
 
 def test_creation_with_init(two_nodes):
@@ -87,12 +91,16 @@ def test_creation_with_init(two_nodes):
     v = randint(0, 100)
     ivA = IsacValue(nA, uri, v, survey_last_value=False, survey_static_tags=False)
     assert ivA.value == v
+    assert ivA.static_tags == {}
+    assert ivA.tags == {}
     assert ivA.metadata == None
     t = ivA.timestamp
 
     ivB = IsacValue(nB, uri, survey_static_tags=False)
     assert ivB.value == v
     assert ivB.timestamp == t
+    assert ivB.static_tags == {}
+    assert ivB.tags == {}
     assert ivB.metadata == None
 
 def test_creation_with_full_init(two_nodes):
@@ -104,6 +112,8 @@ def test_creation_with_full_init(two_nodes):
     ivA = IsacValue(nA, uri, (v1, ts1), survey_last_value=False, survey_static_tags=False)
     assert ivA.value == v1
     assert ivA.timestamp == ts1
+    assert ivA.static_tags == {}
+    assert ivA.tags == {}
     assert ivA.metadata == None
 
     v2 = v1 + 10
@@ -111,9 +121,13 @@ def test_creation_with_full_init(two_nodes):
     ivB = IsacValue(nB, uri, (v2, ts2), survey_static_tags=False)
     assert ivB.value == v1
     assert ivB.timestamp == ts1
+    assert ivB.static_tags == {}
+    assert ivB.tags == {}
     assert ivB.metadata == None
     assert ivA.value == v1
     assert ivA.timestamp == ts1
+    assert ivA.static_tags == {}
+    assert ivA.tags == {}
     assert ivA.metadata == None
 
     ivB = None
@@ -122,9 +136,13 @@ def test_creation_with_full_init(two_nodes):
     ivB = IsacValue(nB, uri, (v3, ts3), survey_static_tags=False)
     assert ivB.value == v3
     assert ivB.timestamp == ts3
+    assert ivB.static_tags == {}
+    assert ivB.tags == {}
     assert ivB.metadata == None
     assert ivA.value == v3
     assert ivA.timestamp == ts3
+    assert ivA.static_tags == {}
+    assert ivA.tags == {}
     assert ivA.metadata == None
 
 def test_creation_static_tags(two_nodes):
@@ -150,7 +168,7 @@ def test_creation_dynamic_tags(two_nodes):
     assert ivA.tags == dynamic_tags
 
     ivB = IsacValue(nB, uri, survey_static_tags=False)
-    assert ivB.tags == None # Did not get stored because the default timestamps (0) were equal in both cases
+    assert ivB.tags == {} # Did not get stored because the default timestamps (0) were equal in both cases
 
     ivB = None
     ivA.value = randint(0, 100)

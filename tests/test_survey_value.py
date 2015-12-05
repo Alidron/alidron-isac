@@ -46,7 +46,7 @@ def test_survey_last_value(two_nodes):
     assert nB.survey_last_value(uri, limit_peers=1) == (None, 0, None, None, None)
 
     iv.value = randint(0, 100)
-    assert nB.survey_last_value(uri, limit_peers=1) == (iv.value, iv.timestamp_float, None) + nA.name_uuid()
+    assert nB.survey_last_value(uri, limit_peers=1) == (iv.value, iv.timestamp_float, {}) + nA.name_uuid()
 
     # Inexistent value are not an error, they simply return None at time 0
     # (That is actually what give the default state of an uninitialised/new value behind the scene)

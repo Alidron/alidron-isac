@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 class IsacValue(object):
 
-    def __init__(self, isac_node, uri, initial_value=None, static_tags=None, dynamic_tags=None, metadata=None, observers=Observable(), survey_last_value=True, survey_static_tags=True):
+    def __init__(self, isac_node, uri, initial_value=None, static_tags={}, dynamic_tags={}, metadata=None, observers=Observable(), survey_last_value=True, survey_static_tags=True):
         ts = datetime.now()
 
         self.isac_node = isac_node
