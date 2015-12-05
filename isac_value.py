@@ -52,7 +52,7 @@ class IsacValue(object):
                 self.value_ts = initial_value
 
             else:
-                last_value, last_ts_float, tags, peer_name, peer_uuid = self.isac_node.survey_last_value(self.uri, limit_peers=1)
+                last_value, last_ts_float, tags = self.isac_node.survey_last_value(self.uri, limit_peers=1)
 
                 if isinstance(initial_value[1], datetime):
                     last_ts = datetime.fromtimestamp(last_ts_float)
@@ -64,7 +64,7 @@ class IsacValue(object):
                     self.value_ts = initial_value
                 else: # We want to notify all our internal subscribers of the newer last value
                     self._value, self._timestamp = None, datetime.fromtimestamp(0)
-                    self.update_value_from_isac(last_value, last_ts_float, tags, peer_name, peer_uuid)
+                    self.update_value_from_isac(last_value, last_ts_float, tags)
 
         else:
             logger.debug('publishing value', initial_value)
@@ -197,21 +197,23 @@ class IsacValue(object):
         if self._metadata:
             self.metadata_observers(self, self._metadata)
 
-    def update_value_from_isac(self, new_value, ts_float, tags, peer_name, peer_uuid):
+    def update_value_from_isac(self, new_value, ts_float, tags):
         if ts_float > self.timestamp_float:
-            logger.debug('Got newer value for %s: %s, %s, %s', self.uri, new_value, ts_float, tags, peer_name, peer_uuid)
+            logger.debug('Got newer value for %s: %s, %s, %s', self.uri, new_value, ts_float, tags)
             self._value = new_value
             self._timestamp = datetime.fromtimestamp(ts_float)
             self._dynamic_tags = tags
-            self.observers(self, self._value, self._timestamp, self._dynamic_tags, peer_name, peer_uuid)
+            self.observers(self, self._value, self._timestamp, self._dynamic_tags)
         elif ts_float < self.timestamp_float:
             logger.warning('Trying to update value %s with a value older than what we have (%f vs. %f)', self.uri, ts_float, self.timestamp_float)
         # else equal time => do nothing
 
     def publish_value(self, value, ts, tags):
         ts_float = self.timestamp_float
+        tags.update(self.isac_node.name_uuid())
+
         logger.debug('Publishing for %s: %s, %s, %s', self.uri, value, ts_float, tags)
-        self.isac_node.pub_sub.publish(self.uri, (value, ts_float, tags) + self.isac_node.name_uuid())
+        self.isac_node.pub_sub.publish(self.uri, (value, ts_float, tags))
 
     def survey_metadata(self):
         self._set_metadata(self.isac_node.survey_value_metadata(self.uri))
@@ -229,7 +231,7 @@ class IsacValue(object):
 
         func_name = '.'.join((self.uri, 'get_history_impl'))
         data = self.isac_node.rpc.call_on(peer_name, func_name, (t1, t2))
-        return [(point[0], datetime.fromtimestamp(point[1]), point[2], point[3], point[4]) for point in data]
+        return [(point[0], datetime.fromtimestamp(point[1]), point[2]) for point in data]
 
     def __str__(self):
         return '{0}: {1}'.format(self.timestamp, self.value)

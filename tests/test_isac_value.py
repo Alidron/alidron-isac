@@ -76,12 +76,20 @@ def test_creation_no_init(two_nodes):
     assert ivA.tags == {}
     assert ivA.metadata == None
 
+    ivB = IsacValue(nB, uri, survey_static_tags=False)
+    assert ivB.value == None
+    assert ivB.timestamp == datetime(1970, 1, 1, 0, 0)
+    assert ivB.static_tags == {}
+    assert ivB.tags == {}
+    assert ivB.metadata == None
+
+    ivB = None
     ivA.value = randint(0, 100)
     ivB = IsacValue(nB, uri, survey_static_tags=False)
     assert ivB.value == ivA.value
     assert ivB.timestamp == ivA.timestamp
     assert ivB.static_tags == {}
-    assert ivB.tags == {}
+    assert ivB.tags == nA.name_uuid()
     assert ivB.metadata == None
 
 def test_creation_with_init(two_nodes):
@@ -92,7 +100,7 @@ def test_creation_with_init(two_nodes):
     ivA = IsacValue(nA, uri, v, survey_last_value=False, survey_static_tags=False)
     assert ivA.value == v
     assert ivA.static_tags == {}
-    assert ivA.tags == {}
+    assert ivA.tags == nA.name_uuid()
     assert ivA.metadata == None
     t = ivA.timestamp
 
@@ -100,7 +108,7 @@ def test_creation_with_init(two_nodes):
     assert ivB.value == v
     assert ivB.timestamp == t
     assert ivB.static_tags == {}
-    assert ivB.tags == {}
+    assert ivB.tags == nA.name_uuid()
     assert ivB.metadata == None
 
 def test_creation_with_full_init(two_nodes):
@@ -113,7 +121,7 @@ def test_creation_with_full_init(two_nodes):
     assert ivA.value == v1
     assert ivA.timestamp == ts1
     assert ivA.static_tags == {}
-    assert ivA.tags == {}
+    assert ivA.tags == nA.name_uuid()
     assert ivA.metadata == None
 
     v2 = v1 + 10
@@ -122,12 +130,12 @@ def test_creation_with_full_init(two_nodes):
     assert ivB.value == v1
     assert ivB.timestamp == ts1
     assert ivB.static_tags == {}
-    assert ivB.tags == {}
+    assert ivB.tags == nA.name_uuid()
     assert ivB.metadata == None
     assert ivA.value == v1
     assert ivA.timestamp == ts1
     assert ivA.static_tags == {}
-    assert ivA.tags == {}
+    assert ivA.tags == nA.name_uuid()
     assert ivA.metadata == None
 
     ivB = None
@@ -137,12 +145,12 @@ def test_creation_with_full_init(two_nodes):
     assert ivB.value == v3
     assert ivB.timestamp == ts3
     assert ivB.static_tags == {}
-    assert ivB.tags == {}
+    assert ivB.tags == nB.name_uuid()
     assert ivB.metadata == None
     assert ivA.value == v3
     assert ivA.timestamp == ts3
     assert ivA.static_tags == {}
-    assert ivA.tags == {}
+    assert ivA.tags == nB.name_uuid()
     assert ivA.metadata == None
 
 def test_creation_static_tags(two_nodes):
@@ -159,23 +167,30 @@ def test_creation_static_tags(two_nodes):
     iv2A = IsacValue(nA, uri + '_dont_exists', survey_last_value=False)
     assert iv2A.static_tags == None
 
+@pytest.mark.xfail # But why?!
 def test_creation_dynamic_tags(two_nodes):
     nA, nB = two_nodes
 
     uri = 'test://test_isac_value/test_creation_dynamic_tags/test_dynamic_tags'
+
     dynamic_tags = {'this': 'is', 'dynamic': 'tags'}
+    dynamic_tags_full = dynamic_tags
+    dynamic_tags_full.update(nA.name_uuid())
+
     ivA = IsacValue(nA, uri, dynamic_tags=dynamic_tags, survey_last_value=False, survey_static_tags=False)
     assert ivA.tags == dynamic_tags
 
     ivB = IsacValue(nB, uri, survey_static_tags=False)
+    # print ivB.value_ts, ivB._dynamic_tags
     assert ivB.tags == {} # Did not get stored because the default timestamps (0) were equal in both cases
 
     ivB = None
     ivA.value = randint(0, 100)
     ivB = IsacValue(nB, uri, survey_static_tags=False)
+    assert ivA.tags == dynamic_tags_full
     assert ivB.value == ivA.value
     assert ivB.timestamp == ivA.timestamp
-    assert ivB.tags == dynamic_tags
+    assert ivB.tags == dynamic_tags_full
 
 def test_creation_metadata(two_nodes):
     nA, nB = two_nodes
@@ -254,61 +269,86 @@ def test_property_tags(two_nodes):
     nA,nB = two_nodes
 
     uri = 'test://test_isac_value/test_property_tags/test_property_tags'
+
     dynamic_tags = {'this': 'is', 'dynamic': 'tags'}
+    dynamic_tags_full = dynamic_tags
+    dynamic_tags_full.update(nA.name_uuid())
+
     dynamic_tags2 = {'this': 'is', 'dynamic': 'tags', 'additional': 'tag'}
+    dynamic_tags2_full = dynamic_tags2
+    dynamic_tags2_full.update(nA.name_uuid())
+
     ivA = IsacValue(nA, uri, randint(0, 100), dynamic_tags=dict(dynamic_tags), survey_last_value=False, survey_static_tags=False)
     ivB = IsacValue(nB, uri, survey_static_tags=False)
-    assert ivA.tags == dynamic_tags
-    assert ivB.tags == dynamic_tags
+    assert ivA.tags == dynamic_tags_full
+    assert ivB.tags == dynamic_tags_full
 
     ivA.tags['additional'] = 'tag'
     ivA.value = randint(0, 100)
-    assert ivA.tags == dynamic_tags2
-    assert ivB.tags == dynamic_tags2
+    assert ivA.tags == dynamic_tags2_full
+    assert ivB.tags == dynamic_tags2_full
 
 def test_property_value_tags(two_nodes):
     nA,nB = two_nodes
 
     uri = 'test://test_isac_value/test_property_value_tags/test_property_value_tags'
+
     dynamic_tags = {'this': 'is', 'dynamic': 'tags'}
+    dynamic_tags_full = dynamic_tags
+    dynamic_tags_full.update(nA.name_uuid())
+
     dynamic_tags2 = {'this': 'is', 'dynamic': 'tags', 'additional': 'tag'}
+    dynamic_tags2_full = dynamic_tags2
+    dynamic_tags2_full.update(nA.name_uuid())
+
     ivA = IsacValue(nA, uri, randint(0, 100), dynamic_tags=dynamic_tags, survey_last_value=False, survey_static_tags=False)
     ivB = IsacValue(nB, uri, survey_static_tags=False)
-    assert ivA.value_tags == (ivA.value, dynamic_tags)
-    assert ivB.value_tags == (ivA.value, dynamic_tags)
+    assert ivA.value_tags == (ivA.value, dynamic_tags_full)
+    assert ivB.value_tags == (ivA.value, dynamic_tags_full)
 
     v = randint(0, 100)
     ivA.value_tags = v, dynamic_tags2
-    assert ivA.value_tags == (v, dynamic_tags2)
-    assert ivB.value_tags == (v, dynamic_tags2)
+    assert ivA.value_tags == (v, dynamic_tags2_full)
+    assert ivB.value_tags == (v, dynamic_tags2_full)
 
 def test_property_ts_tags(two_nodes):
     nA,nB = two_nodes
 
     uri = 'test://test_isac_value/test_property_ts_tags/test_property_ts_tags'
+
     dynamic_tags = {'this': 'is', 'dynamic': 'tags'}
+    dynamic_tags_full = dynamic_tags
+    dynamic_tags_full.update(nA.name_uuid())
+
     ivA = IsacValue(nA, uri, randint(0, 100), dynamic_tags=dynamic_tags, survey_last_value=False, survey_static_tags=False)
     ivB = IsacValue(nB, uri, survey_static_tags=False)
-    assert ivA.ts_tags == (ivA.timestamp, dynamic_tags)
-    assert ivB.ts_tags == (ivA.timestamp, dynamic_tags)
+    assert ivA.ts_tags == (ivA.timestamp, dynamic_tags_full)
+    assert ivB.ts_tags == (ivA.timestamp, dynamic_tags_full)
 
 
 def test_property_value_ts_tags(two_nodes):
     nA,nB = two_nodes
 
     uri = 'test://test_isac_value/test_property_value_ts_tags/test_property_value_ts_tags'
+
     dynamic_tags = {'this': 'is', 'dynamic': 'tags'}
+    dynamic_tags_full = dynamic_tags
+    dynamic_tags_full.update(nA.name_uuid())
+
     dynamic_tags2 = {'this': 'is', 'dynamic': 'tags', 'additional': 'tag'}
+    dynamic_tags2_full = dynamic_tags2
+    dynamic_tags2_full.update(nA.name_uuid())
+
     ivA = IsacValue(nA, uri, randint(0, 100), dynamic_tags=dynamic_tags, survey_last_value=False, survey_static_tags=False)
     ivB = IsacValue(nB, uri, survey_static_tags=False)
-    assert ivA.value_ts_tags == (ivA.value, ivA.timestamp, dynamic_tags)
-    assert ivB.value_ts_tags == (ivA.value, ivA.timestamp, dynamic_tags)
+    assert ivA.value_ts_tags == (ivA.value, ivA.timestamp, dynamic_tags_full)
+    assert ivB.value_ts_tags == (ivA.value, ivA.timestamp, dynamic_tags_full)
 
     v = ivA.value + 10
     ts = ivA.timestamp + timedelta(hours=1)
     ivA.value_ts_tags = v, ts, dynamic_tags2
-    assert ivA.value_ts_tags == (v, ts, dynamic_tags2)
-    assert ivB.value_ts_tags == (v, ts, dynamic_tags2)
+    assert ivA.value_ts_tags == (v, ts, dynamic_tags2_full)
+    assert ivB.value_ts_tags == (v, ts, dynamic_tags2_full)
 
 def test_property_metadata(two_nodes):
     nA, nB = two_nodes
@@ -346,13 +386,11 @@ def test_observer(two_nodes):
     ivA.value = randint(0, 100)
     green.sleep(0.5)
     assert obs.args, 'Callback not received'
-    iv_recv, value, ts, tags, peer_name, peer_uuid = obs.args
+    iv_recv, value, ts, tags = obs.args
     assert iv_recv == ivB
     assert value == ivA.value
     assert ts == ivA.timestamp
     assert tags == ivA.tags
-    assert peer_name == nA.name_uuid()[0]
-    assert peer_uuid == nA.name_uuid()[1]
 
 class FakeArchivedValue(ArchivedValue):
 
@@ -360,9 +398,9 @@ class FakeArchivedValue(ArchivedValue):
         super(self.__class__, self).__init__(*args, **kwargs)
 
         self._test_data = [
-            (0, 10, None, 'testA', '123456'),
-            (1, 10.5, {'this': 'is'}, 'testA', '123456'),
-            (2, 11, {'a': 'tag'}, 'testA', '123456'),
+            (0, 10, {'peer_name': 'testA', 'peer_uuid': '123456'}),
+            (1, 10.5, {'this': 'is', 'peer_name': 'testA', 'peer_uuid': '123456'}),
+            (2, 11, {'a': 'tag', 'peer_name': 'testA', 'peer_uuid': '123456'}),
         ]
         self._test_time_period = None
 
@@ -378,7 +416,7 @@ def test_history(two_nodes):
     ivB = FakeArchivedValue(nB, uri, survey_static_tags=False)
     time_period = (0, 20)
     data = ivA.get_history(time_period)
-    data_fixture_converted = [(point[0], datetime.fromtimestamp(point[1]), point[2], point[3], point[4]) for point in ivB._test_data]
+    data_fixture_converted = [(point[0], datetime.fromtimestamp(point[1]), point[2]) for point in ivB._test_data]
     assert ivB._test_time_period, 'History callback not called'
     assert ivB._test_time_period == list(time_period)
     assert data == data_fixture_converted

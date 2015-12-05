@@ -35,13 +35,13 @@ class SurveyLastValue(Survey):
             isac_value = self.isac_node.isac_values[uri]
             logger.debug('Responding to survey for %s: (%s) %s', uri, isac_value.timestamp, isac_value.value)
             # TODO: Actually send back the original source peer_name and peer_uuid. Requires quite some refactoring ...
-            self.reply(peer_id, request_id, (isac_value.value, isac_value.timestamp_float, isac_value.tags) + self.isac_node.name_uuid())
+            self.reply(peer_id, request_id, (isac_value.value, isac_value.timestamp_float, isac_value.tags))
         else:
             logger.debug('I don\'t know %s, not responding', uri)
 
     def process_result(self, results):
         max_ts = 0.0
-        max_data = (None, max_ts, None, None, None)
+        max_data = (None, max_ts, {})
         for peer_name, data in results:
             ts = data[1]
             if ts > max_ts:

@@ -58,7 +58,7 @@ class IsacNode(object):
         green.sleep(0.1)
 
     def name_uuid(self):
-        return self.transport.name(), str(self.transport.uuid())
+        return {'peer_name': self.transport.name(), 'peer_uuid': str(self.transport.uuid())}
 
     def subscribe(self, topic, isac_value):
         self.isac_values[topic] = isac_value
