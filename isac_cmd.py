@@ -48,6 +48,9 @@ class IsacCmd(cmd.Cmd):
         args = args.split(' ')
         self.values[args[0]].value = eval(args[1])
 
+    def do_get(self, args):
+        print self.values[args].value_ts_tags
+
     def do_p(self, args):
         green.sleep(0.1)
 
