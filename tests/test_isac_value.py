@@ -328,8 +328,8 @@ def test_observer(two_nodes):
     ivA.value = randint(0, 100)
     green.sleep(0.5)
     assert obs.args, 'Callback not received'
-    uri_recv, value, ts, tags, peer_name, peer_uuid = obs.args
-    assert uri_recv == uri
+    iv_recv, value, ts, tags, peer_name, peer_uuid = obs.args
+    assert iv_recv == ivB
     assert value == ivA.value
     assert ts == ivA.timestamp
     assert tags == ivA.tags

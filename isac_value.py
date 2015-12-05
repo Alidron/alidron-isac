@@ -195,7 +195,7 @@ class IsacValue(object):
 
         self._metadata = metadata
         if self._metadata:
-            self.metadata_observers(self.uri, self._metadata)
+            self.metadata_observers(self, self._metadata)
 
     def update_value_from_isac(self, new_value, ts_float, tags, peer_name, peer_uuid):
         if ts_float > self.timestamp_float:
@@ -203,7 +203,7 @@ class IsacValue(object):
             self._value = new_value
             self._timestamp = datetime.fromtimestamp(ts_float)
             self._dynamic_tags = tags
-            self.observers(self.uri, self._value, self._timestamp, self._dynamic_tags, peer_name, peer_uuid)
+            self.observers(self, self._value, self._timestamp, self._dynamic_tags, peer_name, peer_uuid)
         elif ts_float < self.timestamp_float:
             logger.warning('Trying to update value %s with a value older than what we have (%f vs. %f)', self.uri, ts_float, self.timestamp_float)
         # else equal time => do nothing
