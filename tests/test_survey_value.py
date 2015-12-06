@@ -81,8 +81,8 @@ def test_survey_value_static_tags(two_nodes):
     uri_statictags = 'test://test_survey_value/test_survey_value_static_tags/iv_statictags'
     iv_statictags = IsacValue(nA, uri_statictags, static_tags={'this': 'is', 'static': 'tags'}, survey_last_value=False, survey_static_tags=False)
 
-    assert nB.survey_value_static_tags(uri_nostatictags, timeout=0.1) is None
-    assert nB.survey_value_static_tags('test://test_survey_value/test_survey_value_static_tags/unknown', timeout=0.1) is None
+    assert nB.survey_value_static_tags(uri_nostatictags, timeout=0.1) == {}
+    assert nB.survey_value_static_tags('test://test_survey_value/test_survey_value_static_tags/unknown', timeout=0.1) == {}
     assert nB.survey_value_static_tags(uri_statictags) == iv_statictags.static_tags
 
 def test_survey_value_metadata(two_nodes):

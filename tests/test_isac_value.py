@@ -70,18 +70,18 @@ def test_creation_no_init(two_nodes):
 
     uri = 'test://test_isac_value/test_creation_no_init/test_no_init'
     ivA = IsacValue(nA, uri, survey_static_tags=False)
-    assert ivA.value == None
+    assert ivA.value is None
     assert ivA.timestamp == datetime(1970, 1, 1, 0, 0)
     assert ivA.static_tags == {}
     assert ivA.tags == {}
-    assert ivA.metadata == None
+    assert ivA.metadata is None
 
     ivB = IsacValue(nB, uri, survey_static_tags=False)
-    assert ivB.value == None
+    assert ivB.value is None
     assert ivB.timestamp == datetime(1970, 1, 1, 0, 0)
     assert ivB.static_tags == {}
     assert ivB.tags == {}
-    assert ivB.metadata == None
+    assert ivB.metadata is None
 
     ivB = None
     ivA.value = randint(0, 100)
@@ -90,7 +90,7 @@ def test_creation_no_init(two_nodes):
     assert ivB.timestamp == ivA.timestamp
     assert ivB.static_tags == {}
     assert ivB.tags == nA.name_uuid()
-    assert ivB.metadata == None
+    assert ivB.metadata is None
 
 def test_creation_with_init(two_nodes):
     nA, nB = two_nodes
@@ -101,7 +101,7 @@ def test_creation_with_init(two_nodes):
     assert ivA.value == v
     assert ivA.static_tags == {}
     assert ivA.tags == nA.name_uuid()
-    assert ivA.metadata == None
+    assert ivA.metadata is None
     t = ivA.timestamp
 
     ivB = IsacValue(nB, uri, survey_static_tags=False)
@@ -109,7 +109,7 @@ def test_creation_with_init(two_nodes):
     assert ivB.timestamp == t
     assert ivB.static_tags == {}
     assert ivB.tags == nA.name_uuid()
-    assert ivB.metadata == None
+    assert ivB.metadata is None
 
 def test_creation_with_full_init(two_nodes):
     nA, nB = two_nodes
@@ -122,7 +122,7 @@ def test_creation_with_full_init(two_nodes):
     assert ivA.timestamp == ts1
     assert ivA.static_tags == {}
     assert ivA.tags == nA.name_uuid()
-    assert ivA.metadata == None
+    assert ivA.metadata is None
 
     v2 = v1 + 10
     ts2 = datetime.now() - timedelta(hours=2)
@@ -131,12 +131,12 @@ def test_creation_with_full_init(two_nodes):
     assert ivB.timestamp == ts1
     assert ivB.static_tags == {}
     assert ivB.tags == nA.name_uuid()
-    assert ivB.metadata == None
+    assert ivB.metadata is None
     assert ivA.value == v1
     assert ivA.timestamp == ts1
     assert ivA.static_tags == {}
     assert ivA.tags == nA.name_uuid()
-    assert ivA.metadata == None
+    assert ivA.metadata is None
 
     ivB = None
     v3 = v2 + 10
@@ -146,12 +146,12 @@ def test_creation_with_full_init(two_nodes):
     assert ivB.timestamp == ts3
     assert ivB.static_tags == {}
     assert ivB.tags == nB.name_uuid()
-    assert ivB.metadata == None
+    assert ivB.metadata is None
     assert ivA.value == v3
     assert ivA.timestamp == ts3
     assert ivA.static_tags == {}
     assert ivA.tags == nB.name_uuid()
-    assert ivA.metadata == None
+    assert ivA.metadata is None
 
 def test_creation_static_tags(two_nodes):
     nA, nB = two_nodes
@@ -165,7 +165,7 @@ def test_creation_static_tags(two_nodes):
     assert ivB.static_tags == static_tags
 
     iv2A = IsacValue(nA, uri + '_dont_exists', survey_last_value=False)
-    assert iv2A.static_tags == None
+    assert iv2A.static_tags == {}
 
 @pytest.mark.xfail # But why?!
 def test_creation_dynamic_tags(two_nodes):
@@ -201,7 +201,7 @@ def test_creation_metadata(two_nodes):
     assert ivA.metadata == metadata
 
     ivB = IsacValue(nB, uri, survey_last_value=False, survey_static_tags=False)
-    assert ivB.metadata == None
+    assert ivB.metadata is None
 
     ivA.survey_metadata()
     assert ivA.metadata == metadata
@@ -215,8 +215,8 @@ def test_property_value(two_nodes):
     uri = 'test://test_isac_value/test_property_value/test_property_value'
     ivA = IsacValue(nA, uri, survey_last_value=False, survey_static_tags=False)
     ivB = IsacValue(nB, uri, survey_static_tags=False)
-    assert ivA.value == None
-    assert ivB.value == None
+    assert ivA.value is None
+    assert ivB.value is None
 
     v1 = randint(0, 100)
     ivA.value = v1
@@ -356,13 +356,13 @@ def test_property_metadata(two_nodes):
     uri = 'test://test_isac_value/test_property_metadata/test_property_metadata'
     ivA = IsacValue(nA, uri, survey_last_value=False, survey_static_tags=False)
     ivB = IsacValue(nB, uri, survey_static_tags=False)
-    assert ivA.metadata == None
-    assert ivB.metadata == None
+    assert ivA.metadata is None
+    assert ivB.metadata is None
 
     metadata = {'this': 'is', 'meta': 'data'}
     ivA.metadata = metadata
     assert ivA.metadata == metadata
-    assert ivB.metadata == None
+    assert ivB.metadata is None
 
     ivB.survey_metadata()
     assert ivB.metadata == metadata

@@ -45,4 +45,4 @@ class SurveyValueStaticTags(Survey):
         if results:
             return results[0][1]
         else:
-            return None
+            return {}
