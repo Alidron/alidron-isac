@@ -53,7 +53,7 @@ class IsacNode(object):
         self.rpc.start()
         self.pub_sub.start()
 
-        self.transport.run(0.1)
+        self.transport.run()
 
         green.sleep(0.1)
 
