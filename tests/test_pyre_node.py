@@ -1,17 +1,17 @@
 # Copyright 2015 - Alidron's authors
 #
 # This file is part of Alidron.
-# 
+#
 # Alidron is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # Alidron is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public License
 # along with Alidron.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -70,7 +70,7 @@ def wait_cb(results, cb_name, timeout=10, step=0.1):
 
 def test_on_new_peer(node_with_callbacks):
     nA, results = node_with_callbacks
-    nA.run(0.1)
+    nA.run()
 
     nB = PyreNode('testB')
     try:
@@ -78,7 +78,7 @@ def test_on_new_peer(node_with_callbacks):
         nB.set_header('rpc_port', str(999))
         nB.set_header('pub_proto', 'tcp')
         nB.set_header('pub_port', str(999))
-        nB.run(0.1)
+        nB.run()
 
         wait_cb(results, 'on_new_peer')
 
@@ -93,12 +93,12 @@ def test_on_new_peer(node_with_callbacks):
 
 def test_on_peer_gone(node_with_callbacks):
     nA, results = node_with_callbacks
-    nA.run(0.1)
+    nA.run()
 
     nB = PyreNode('testB')
     nB_uuid = nB.uuid()
     try:
-        nB.run(0.1)
+        nB.run()
         wait_cb(results, 'on_new_peer')
     finally:
         nB.shutdown()
@@ -111,11 +111,11 @@ def test_on_peer_gone(node_with_callbacks):
 
 def test_on_survey(node_with_callbacks):
     nA, results = node_with_callbacks
-    nA.run(0.1)
+    nA.run()
 
     nB = PyreNode('testB')
     try:
-        nB.run(0.1)
+        nB.run()
         wait_cb(results, 'on_new_peer')
 
         nB.send_survey({'req_id': 'this is a test'}, 0.1, 1)
@@ -131,12 +131,12 @@ def test_on_survey(node_with_callbacks):
 
 def test_on_event(node_with_callbacks):
     nA, results = node_with_callbacks
-    nA.run(0.1)
+    nA.run()
     nA.join('EVENT')
 
     nB = PyreNode('testB')
     try:
-        nB.run(0.1)
+        nB.run()
         wait_cb(results, 'on_new_peer')
 
         nB.send_event('various data')
@@ -152,11 +152,11 @@ def test_on_event(node_with_callbacks):
 
 def test_survey_process(node_with_callbacks):
     nA, results = node_with_callbacks
-    nA.run(0.1)
+    nA.run()
 
     nB = PyreNode('testB')
     try:
-        nB.run(0.1)
+        nB.run()
         wait_cb(results, 'on_new_peer')
 
         # Test it can cope with wrong req_id
