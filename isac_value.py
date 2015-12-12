@@ -41,6 +41,9 @@ class IsacValue(object):
             name=self.uri
         )
 
+        if not self._static_tags and survey_static_tags:
+            self._static_tags = self.isac_node.survey_value_static_tags(self.uri)
+
         self._value = initial_value
         if initial_value is None:
             self._value, self._timestamp = None, datetime.fromtimestamp(0)
@@ -69,9 +72,6 @@ class IsacValue(object):
         else:
             logger.debug('publishing value', initial_value)
             self.value_ts = initial_value, ts
-
-        if not self._static_tags and survey_static_tags:
-            self._static_tags = self.isac_node.survey_value_static_tags(self.uri)
 
         #print '>>>>>', self.uri, id(self), type(self._metadata), self._metadata
         if self._metadata:

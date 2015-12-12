@@ -21,7 +21,7 @@ from datetime import datetime, timedelta
 from random import randint
 
 from isac import IsacNode, IsacValue, ArchivedValue, NoPeerWithHistoryException
-from isac.tools import green
+from isac.tools import green, Observable
 
 # logging.basicConfig(level=logging.DEBUG)
 
@@ -374,14 +374,15 @@ class Observer(object):
 
     def observer(self, *args):
         self.args = args
+        self.static_tags = dict(args[0].static_tags)
 
-def test_observer(two_nodes):
+def test_observer_after_creation(two_nodes):
     nA, nB = two_nodes
     obs = Observer()
 
     uri = 'test://test_isac_value/test_observer/test_observer'
-    ivA = IsacValue(nA, uri, survey_last_value=False, survey_static_tags=False)
-    ivB = IsacValue(nB, uri, survey_static_tags=False)
+    ivA = IsacValue(nA, uri, static_tags={'this': 'is', 'static': 'tags'}, survey_last_value=False, survey_static_tags=False)
+    ivB = IsacValue(nB, uri)
     ivB.observers += obs.observer
     ivA.value = randint(0, 100)
     green.sleep(0.5)
@@ -391,6 +392,23 @@ def test_observer(two_nodes):
     assert value == ivA.value
     assert ts == ivA.timestamp
     assert tags == ivA.tags
+    assert obs.static_tags == ivA.static_tags
+
+def test_observer_at_creation(two_nodes):
+    nA, nB = two_nodes
+    obs = Observer()
+
+    uri = 'test://test_isac_value/test_observer_at_creation/test_observer'
+    ivA = IsacValue(nA, uri, randint(0, 100), static_tags={'this': 'is', 'static': 'tags'}, survey_last_value=False, survey_static_tags=False)
+    ivB = IsacValue(nB, uri, observers=Observable([obs.observer]))
+    green.sleep(0.5)
+    assert obs.args, 'Callback not received'
+    iv_recv, value, ts, tags = obs.args
+    assert iv_recv == ivB
+    assert value == ivA.value
+    assert ts == ivA.timestamp
+    assert tags == ivA.tags
+    assert obs.static_tags == ivA.static_tags
 
 class FakeArchivedValue(ArchivedValue):
 
