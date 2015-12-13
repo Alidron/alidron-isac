@@ -65,8 +65,7 @@ class IsacNode(object):
         self.pub_sub.subscribe(topic, isac_value)
 
     def _sub_callback(self, uri, data):
-        logger.debug('Received update for %s', uri)
-        logger.debug('Data is %s', data)
+        logger.debug('(%s) Received update for %s: %s', self.transport.name(), uri, data)
 
         if uri in self.isac_values:
             isac_value = self.isac_values[uri]
