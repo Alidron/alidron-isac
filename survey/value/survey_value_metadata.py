@@ -35,8 +35,8 @@ class SurveyValueMetadata(Survey):
             isac_value = self.isac_node.isac_values[uri]
             #print '@@@@@@@', uri, id(isac_value), type(isac_value._metadata), isac_value._metadata
             if isac_value.metadata:
-                logger.info('(%s) Responding to metadata survey for %s', self.isac_node.name, uri)
-                self.reply(peer_id, request_id, isac_value.metadata)
+                logger.info('(%s) Responding to metadata survey for %s', self.isac_node.name, uri, self.isac_node.name_uuid())
+                self.reply(peer_id, request_id, (isac_value.metadata, self.isac_node.name_uuid()))
             else:
                 logger.info('(%s) I know %s but I don\'t have any metadata for it', self.isac_node.name, uri)
         else:
@@ -44,6 +44,6 @@ class SurveyValueMetadata(Survey):
 
     def process_result(self, results):
         if results:
-            return results[0][1]
+            return tuple(results[0][1])
         else:
-            return None
+            return (None, None)

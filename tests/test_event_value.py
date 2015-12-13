@@ -67,9 +67,11 @@ class FakeIsacValue(object):
 
     def __init__(self):
         self.metadata = None
+        self.source_peer = None
 
-    def _set_metadata(self, metadata):
+    def _set_metadata(self, metadata, source_peer):
         self.metadata = metadata
+        self.source_peer = source_peer
 
 def test_value_metadata_update_event(two_nodes):
     nA, nB = two_nodes
@@ -80,9 +82,11 @@ def test_value_metadata_update_event(two_nodes):
 
     uri = 'test://test_event_value/test_value_metadata_update_event/test'
     nB.isac_values[uri] = fake_iv
-    nA.event_value_metadata_update(uri, {'this is': 'metadata'})
+    nA.event_value_metadata_update(uri, {'this is': 'metadata'}, nA.name_uuid())
 
     green.sleep(0.25)
 
     assert fake_iv.metadata, 'Callback not called'
     assert fake_iv.metadata == {'this is': 'metadata'}
+    assert fake_iv.source_peer['peer_name'] == nA.name
+    assert fake_iv.source_peer['peer_uuid'] == str(nA.transport.uuid())

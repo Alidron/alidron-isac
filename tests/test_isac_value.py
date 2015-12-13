@@ -408,6 +408,33 @@ def test_observer_at_creation(two_nodes):
     assert tags == ivA.tags
     assert obs.static_tags == ivA.static_tags
 
+def test_observer_metadata(two_nodes):
+    nA, nB = two_nodes
+    obs = Observer()
+
+    try:
+        nB.transport.join_event() # Necesarry, but not user friendly
+        uri = 'test://test_isac_value/test_observer_metadata/test_observer'
+        ivA = IsacValue(nA, uri, survey_last_value=False, survey_static_tags=False)
+        ivB = IsacValue(nB, uri, survey_last_value=False, survey_static_tags=False)
+        ivB.metadata_observers += obs.observer
+        ivA.metadata = {'this': 'is', 'meta': 'data'}
+
+        for i in range(10):
+            green.sleep(0.5)
+            if obs.args is not None:
+                break
+                
+        assert obs.args, 'Callback not received'
+        iv_recv, metadata, source_peer = obs.args
+        assert iv_recv == ivB
+        assert metadata == ivA.metadata
+        assert source_peer['peer_name'] == nA.name
+        assert source_peer['peer_uuid'] == str(nA.transport.uuid())
+
+    finally:
+        nB.transport.leave_event()
+
 class FakeArchivedValue(ArchivedValue):
 
     def __init__(self, *args, **kwargs):

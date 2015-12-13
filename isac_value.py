@@ -75,7 +75,7 @@ class IsacValue(object):
 
         #print '>>>>>', self.uri, id(self), type(self._metadata), self._metadata
         if self._metadata:
-            self.isac_node.event_value_metadata_update(self.uri, self._metadata)
+            self.isac_node.event_value_metadata_update(self.uri, self._metadata, self.isac_node.name_uuid())
 
         self.isac_node.subscribe(self.uri, self)
 
@@ -187,15 +187,15 @@ class IsacValue(object):
     @metadata.setter
     def metadata(self, metadata):
         self._metadata = metadata
-        self.isac_node.event_value_metadata_update(self.uri, self._metadata)
+        self.isac_node.event_value_metadata_update(self.uri, self._metadata, self.isac_node.name_uuid())
 
-    def _set_metadata(self, metadata):
+    def _set_metadata(self, metadata, source_peer):
         if not metadata:
             return
 
         self._metadata = metadata
         if self._metadata:
-            self.metadata_observers(self, self._metadata)
+            self.metadata_observers(self, self._metadata, source_peer)
 
     def update_value_from_isac(self, new_value, ts_float, tags):
         if ts_float > self.timestamp_float:
@@ -216,7 +216,7 @@ class IsacValue(object):
         self.isac_node.pub_sub.publish(self.uri, (value, ts_float, tags))
 
     def survey_metadata(self):
-        self._set_metadata(self.isac_node.survey_value_metadata(self.uri))
+        self._set_metadata(*self.isac_node.survey_value_metadata(self.uri))
 
     def get_history(self, time_period):
         t1, t2 = time_period

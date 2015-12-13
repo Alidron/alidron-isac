@@ -102,8 +102,8 @@ class IsacNode(object):
     def unregister_isac_value_entering(self, observer):
         self.events_manager.call('IsacValueEnteringEvent', 'unregister_observer', observer)
 
-    def event_value_metadata_update(self, value_uri, metadata):
-        self.events_manager.send('ValueMetadataUpdateEvent', value_uri, metadata)
+    def event_value_metadata_update(self, value_uri, metadata, source_peer):
+        self.events_manager.send('ValueMetadataUpdateEvent', value_uri, metadata, source_peer)
 
     def _on_new_peer(self, peer_id, peer_name, pub_endpoint, rpc_endpoint):
         logger.debug('New peer: %s, %d', peer_name, peer_id)

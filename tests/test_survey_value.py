@@ -93,9 +93,9 @@ def test_survey_value_metadata(two_nodes):
     uri_meta = 'test://test_survey_value/test_survey_value_metadata/iv_meta'
     iv_meta = IsacValue(nA, uri_meta, metadata={'a': 1, 'b': 2}, survey_last_value=False, survey_static_tags=False)
 
-    assert nB.survey_value_metadata(uri_nometa, timeout=0.1) is None
-    assert nB.survey_value_metadata('test://test_survey_value/test_survey_value_metadata/unknown', timeout=0.1) is None
-    assert nB.survey_value_metadata(uri_meta) == iv_meta.metadata
+    assert nB.survey_value_metadata(uri_nometa, timeout=0.1) == (None, None)
+    assert nB.survey_value_metadata('test://test_survey_value/test_survey_value_metadata/unknown', timeout=0.1) == (None, None)
+    assert nB.survey_value_metadata(uri_meta) == (iv_meta.metadata, nA.name_uuid())
 
 def test_survey_values_metadata(two_nodes):
     nA, nB = two_nodes
