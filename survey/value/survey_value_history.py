@@ -29,16 +29,16 @@ class SurveyValueHistory(Survey):
         self.limit_peers = 1
 
     def process_request(self, peer_id, request_id, uri, time_period):
-        logger.debug('Survey request for history of value %s', uri)
+        logger.debug('(%s) Survey request for history of value %s', self.isac_node.name, uri)
 
         if uri in self.isac_node.isac_values:
             if '.'.join((uri, 'get_history_impl')) not in self.isac_node.rpc.rpc_service.procedures:
-                logger.debug('I know %s but I don\'t have any history for it. Not responding to survey', uri)
+                logger.debug('(%s) I know %s but I don\'t have any history for it. Not responding to survey', self.isac_node.name, uri)
                 return
 
             self.reply(peer_id, request_id, True)
         else:
-            logger.debug('I don\'t know value %s. Not responding to survey', uri)
+            logger.debug('(%s) I don\'t know value %s. Not responding to survey', self.isac_node.name, uri)
 
     def process_result(self, results):
         if results:

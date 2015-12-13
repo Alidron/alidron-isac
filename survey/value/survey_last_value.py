@@ -29,15 +29,15 @@ class SurveyLastValue(Survey):
         self.limit_peers = 3
 
     def process_request(self, peer_id, request_id, uri):
-        logger.debug('(%s) Survey request for last value of %s', self.transport.name(), uri)
+        logger.debug('(%s) Survey request for last value of %s', self.isac_node.name, uri)
 
         if uri in self.isac_node.isac_values:
             isac_value = self.isac_node.isac_values[uri]
-            logger.debug('(%s) Responding to survey for %s: (%s) %s, %s', self.transport.name(), uri, isac_value.timestamp, isac_value.value, isac_value.tags)
+            logger.debug('(%s) Responding to survey for %s: (%s) %s, %s', self.isac_node.name, uri, isac_value.timestamp, isac_value.value, isac_value.tags)
             # TODO: Actually send back the original source peer_name and peer_uuid. Requires quite some refactoring ...
             self.reply(peer_id, request_id, (isac_value.value, isac_value.timestamp_float, isac_value.tags))
         else:
-            logger.debug('(%s) I don\'t know %s, not responding', self.transport.name(), uri)
+            logger.debug('(%s) I don\'t know %s, not responding', self.isac_node.name, uri)
 
     def process_result(self, results):
         max_ts = 0.0

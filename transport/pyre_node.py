@@ -61,23 +61,23 @@ class PyreNode(Pyre):
                     # logger.debug('qpoll: %s, %s', len(items), items)
 
             except (KeyboardInterrupt, SystemExit):
-                logger.debug('KeyboardInterrupt or SystemExit')
+                logger.debug('(%s) KeyboardInterrupt or SystemExit', self.name())
                 break
 
-        logger.debug('Exiting loop and stopping')
+        logger.debug('(%s) Exiting loop and stopping', self.name())
         self.stop()
 
     def _process_message(self):
-        logger.debug('processing message')
+        logger.debug('(%s) processing message', self.name())
 
         msg = self.recv()
-        logger.debug('received stuff: %s', msg)
+        logger.debug('(%s) received stuff: %s', self.name(), msg)
         msg_type = msg.pop(0)
-        logger.debug('msg_type: %s', msg_type)
+        logger.debug('(%s) msg_type: %s', self.name(), msg_type)
         peer_id = uuid.UUID(bytes=msg.pop(0))
-        logger.debug('peer_id: %s', peer_id)
+        logger.debug('(%s) peer_id: %s', self.name(), peer_id)
         peer_name = msg.pop(0)
-        logger.debug('peer_name: %s', peer_name)
+        logger.debug('(%s) peer_name: %s', self.name(), peer_name)
 
         if msg_type == 'ENTER':
             self.on_peer_enter(peer_id, peer_name, msg)
@@ -92,7 +92,7 @@ class PyreNode(Pyre):
             self.on_peer_whisper(peer_id, peer_name, msg)
 
     def on_peer_enter(self, peer_id, peer_name, msg):
-        logger.debug('ZRE ENTER: %s, %s', peer_name, peer_id)
+        logger.debug('(%s) ZRE ENTER: %s, %s', self.name(), peer_name, peer_id)
 
         pub_endpoint = self.get_peer_endpoint(peer_id, 'pub')
         rpc_endpoint = self.get_peer_endpoint(peer_id, 'rpc')
@@ -103,7 +103,7 @@ class PyreNode(Pyre):
         pass
 
     def on_peer_exit(self, peer_id, peer_name, msg):
-        logger.debug('ZRE EXIT: %s, %s', peer_name, peer_id)
+        logger.debug('(%s) ZRE EXIT: %s, %s', self.name(), peer_name, peer_id)
 
         self.on_peer_gone(peer_id, peer_name)
 
@@ -113,7 +113,7 @@ class PyreNode(Pyre):
     def on_peer_shout(self, peer_id, peer_name, msg):
         group = msg.pop(0)
         data = msg.pop(0)
-        logger.debug('ZRE SHOUT: %s, %s > (%s) %s', peer_name, peer_id, group, data)
+        logger.debug('(%s) ZRE SHOUT: %s, %s > (%s) %s', self.name(), peer_name, peer_id, group, data)
 
         if group == 'SURVEY':
             self.on_survey(peer_id, peer_name, json.loads(data))
@@ -128,11 +128,11 @@ class PyreNode(Pyre):
         pass
 
     def on_peer_whisper(self, peer_id, peer_name, msg):
-        logger.debug('ZRE WHISPER: %s, %s > %s', peer_name, peer_id, msg)
+        logger.debug('(%s) ZRE WHISPER: %s, %s > %s', self.name(), peer_name, peer_id, msg)
 
         reply = json.loads(msg[0])
         if reply['req_id'] in self.request_results:
-            logger.debug('Received reply from %s: %s', peer_name, reply['data'])
+            logger.debug('(%s) Received reply from %s: %s', self.name(), peer_name, reply['data'])
             self.request_results[reply['req_id']].append((peer_name, reply['data']))
 
             ev, limit_peers = self.request_events[reply['req_id']]
@@ -140,7 +140,7 @@ class PyreNode(Pyre):
                 ev.set()
                 green.sleep(0) # Yield
         else:
-            logger.warning('Discarding reply from %s because the request ID is unknown', peer_name)
+            logger.warning('(%s) Discarding reply from %s because the request ID is unknown', self.name(), peer_name)
 
     def get_peer_endpoint(self, peer, prefix):
         pyre_endpoint = self.peer_address(peer)

@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 class ValueMetadataUpdateEvent(Event):
 
     def send(self, value_uri, metadata):
-        logger.info('Sending event for a value metadata update for %s', value_uri)
+        logger.info('(%s) Sending event for a value metadata update for %s', self.isac_node.name, value_uri)
         data = {
             'event_name': self.name(),
             'data': (value_uri, metadata)
@@ -33,7 +33,7 @@ class ValueMetadataUpdateEvent(Event):
 
     def process_event(self, peer_name, data):
         value_uri, metadata = data
-        logger.info('EVENT value metadata update for %s', value_uri)
+        logger.info('(%s) EVENT value metadata update for %s', self.isac_node.name, value_uri)
 
         if value_uri in self.isac_node.isac_values:
             self.isac_node.isac_values[value_uri]._set_metadata(metadata)

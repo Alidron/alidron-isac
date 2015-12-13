@@ -30,7 +30,7 @@ class IsacValueEnteringEvent(Event):
         self._obs = Observable()
 
     def send(self, value_uri):
-        logger.info('Sending event for an entering isac value for %s', value_uri)
+        logger.info('(%s) Sending event for an entering isac value for %s', self.isac_node.name, value_uri)
         data = {
             'event_name': self.name(),
             'data': value_uri
@@ -38,18 +38,18 @@ class IsacValueEnteringEvent(Event):
         self.transport.send_event(data)
 
     def process_event(self, peer_name, value_uri):
-        logger.info('EVENT isac value entering from %s: %s', peer_name, value_uri)
+        logger.info('(%s) EVENT isac value entering from %s: %s', self.isac_node.name, peer_name, value_uri)
         self._obs(peer_name, value_uri)
 
     def register_observer(self, observer):
         if not self._obs:
             self.transport.join_event()
 
-        logger.debug('Registering %s', observer.__name__)
+        logger.debug('(%s) Registering %s', self.isac_node.name, observer.__name__)
         self._obs += observer
 
     def unregister_observer(self, observer):
-        logger.debug('Unregistering %s', observer.__name__)
+        logger.debug('(%s) Unregistering %s', self.isac_node.name, observer.__name__)
         self._obs -= observer
 
         if not self._obs:

@@ -29,17 +29,17 @@ class SurveyValueStaticTags(Survey):
         self.limit_peers = 1
 
     def process_request(self, peer_id, request_id, uri):
-        logger.info('Survey request for static tags of %s', uri)
+        logger.info('(%s) Survey request for static tags of %s', self.isac_node.name, uri)
 
         if uri in self.isac_node.isac_values:
             isac_value = self.isac_node.isac_values[uri]
             if isac_value.static_tags:
-                logger.info('Responding to static tags survey for %s', uri)
+                logger.info('(%s) Responding to static tags survey for %s', self.isac_node.name, uri)
                 self.reply(peer_id, request_id, isac_value.static_tags)
             else:
-                logger.info('I know %s but I don\'t have any static tags for it', uri)
+                logger.info('(%s) I know %s but I don\'t have any static tags for it', self.isac_node.name, uri)
         else:
-            logger.info('I don\'t know %s, not responding', uri)
+            logger.info('(%s) I don\'t know %s, not responding', self.isac_node.name, uri)
 
     def process_result(self, results):
         if results:

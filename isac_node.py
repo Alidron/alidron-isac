@@ -57,15 +57,19 @@ class IsacNode(object):
 
         green.sleep(0.1)
 
+    @property
+    def name(self):
+        return self.transport.name()
+
     def name_uuid(self):
-        return {'peer_name': self.transport.name(), 'peer_uuid': str(self.transport.uuid())}
+        return {'peer_name': self.name, 'peer_uuid': str(self.transport.uuid())}
 
     def subscribe(self, topic, isac_value):
         self.isac_values[topic] = isac_value
         self.pub_sub.subscribe(topic, isac_value)
 
     def _sub_callback(self, uri, data):
-        logger.debug('(%s) Received update for %s: %s', self.transport.name(), uri, data)
+        logger.debug('(%s) Received update for %s: %s', self.name, uri, data)
 
         if uri in self.isac_values:
             isac_value = self.isac_values[uri]
