@@ -219,15 +219,15 @@ class IsacValue(object):
         self._set_metadata(self.isac_node.survey_value_metadata(self.uri))
 
     def get_history(self, time_period):
-        peer_name = self.isac_node.survey_value_history(self.uri, time_period)
-        if not peer_name:
-            raise NoPeerWithHistoryException('Could not find any peer that could provide history for %s' % self.uri)
-
         t1, t2 = time_period
         if isinstance(t1, datetime):
             t1 = time.mktime(t1.timetuple()) + (t1.microsecond * 1e-6)
         if isinstance(t2, datetime):
             t2 = time.mktime(t2.timetuple()) + (t2.microsecond * 1e-6)
+
+        peer_name = self.isac_node.survey_value_history(self.uri, (t1, t2))
+        if not peer_name:
+            raise NoPeerWithHistoryException('Could not find any peer that could provide history for %s' % self.uri)
 
         func_name = '.'.join((self.uri, 'get_history_impl'))
         data = self.isac_node.rpc.call_on(peer_name, func_name, (t1, t2))
