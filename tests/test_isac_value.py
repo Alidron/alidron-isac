@@ -167,7 +167,6 @@ def test_creation_static_tags(two_nodes):
     iv2A = IsacValue(nA, uri + '_dont_exists', survey_last_value=False)
     assert iv2A.static_tags == {}
 
-@pytest.mark.xfail # But why?!
 def test_creation_dynamic_tags(two_nodes):
     nA, nB = two_nodes
 
@@ -181,7 +180,6 @@ def test_creation_dynamic_tags(two_nodes):
     assert ivA.tags == dynamic_tags
 
     ivB = IsacValue(nB, uri, survey_static_tags=False)
-    # print ivB.value_ts, ivB._dynamic_tags
     assert ivB.tags == {} # Did not get stored because the default timestamps (0) were equal in both cases
 
     ivB = None

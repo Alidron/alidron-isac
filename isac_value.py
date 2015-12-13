@@ -25,15 +25,15 @@ logger = logging.getLogger(__name__)
 
 class IsacValue(object):
 
-    def __init__(self, isac_node, uri, initial_value=None, static_tags={}, dynamic_tags={}, metadata=None, observers=Observable(), survey_last_value=True, survey_static_tags=True):
+    def __init__(self, isac_node, uri, initial_value=None, static_tags=None, dynamic_tags=None, metadata=None, observers=None, survey_last_value=True, survey_static_tags=True):
         ts = datetime.now()
 
         self.isac_node = isac_node
         self.uri = uri
         self._metadata = metadata
-        self.observers = observers
-        self._static_tags = static_tags
-        self._dynamic_tags = dynamic_tags
+        self.observers = Observable() if observers is None else observers
+        self._static_tags = {} if static_tags is None else static_tags
+        self._dynamic_tags = {} if dynamic_tags is None else dynamic_tags
         self.metadata_observers = Observable()
 
         self.isac_node.rpc.register(
