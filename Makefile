@@ -17,12 +17,12 @@
 
 image_name = alidron/alidron-isac
 rpi_image_name = alidron/rpi-alidron-isac
-#registry = neuron.local:6667
 registry = registry.tinigrifi.org:5000
+registry_rpi = neuron.local:6667
 
 network_name = alidron
 
-.PHONY: clean clean-dangling build build-rpi push push-rpi pull pull-rpi run-bash run run1 run1-rpi run2 run2-rpi run3 test1 test2 unittest unittest-live
+.PHONY: clean clean-dangling build build-rpi push push-rpi pull pull-rpi run-bash run run1 run1-rpi run2 run2-rpi run3 test1 test2 unittest unittest-rpi unittest-live
 
 clean:
 	docker rmi $(image_name) || true
@@ -49,8 +49,8 @@ pull:
 	docker tag $(registry)/$(image_name) $(image_name)
 
 pull-rpi:
-	docker pull $(registry)/$(rpi_image_name)
-	docker tag $(registry)/$(rpi_image_name) $(rpi_image_name)
+	docker pull $(registry_rpi)/$(rpi_image_name)
+	docker tag $(registry_rpi)/$(rpi_image_name) $(rpi_image_name)
 
 run-bash:
 	docker run -it --net=$(network_name) --rm -v /media/data/Informatique/Python/Netcall/netcall:/usr/src/netcall -v `pwd`:/usr/src/alidron-isac/isac $(image_name) bash
@@ -84,6 +84,9 @@ test2:
 
 unittest:
 	docker run --rm --name alidron-isac-unittest $(image_name) py.test -s --cov-report term-missing --cov-config /usr/src/alidron-isac/isac/.coveragerc --cov=isac /usr/src/alidron-isac
+
+unittest-rpi:
+	docker run --rm --name alidron-isac-unittest $(rpi_image_name) py.test -s --cov-report term-missing --cov-config /usr/src/alidron-isac/isac/.coveragerc --cov=isac /usr/src/alidron-isac
 
 unittest-live:
 	docker run --rm --name alidron-isac-unittest -v `pwd`:/usr/src/alidron-isac/isac $(image_name) py.test -s --cov-report term-missing --cov-config /usr/src/alidron-isac/isac/.coveragerc --cov=isac /usr/src/alidron-isac # -k test_observer_metadata
