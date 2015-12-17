@@ -10,12 +10,12 @@ build-x86:
     script:
         - make build
 
-  build-rpi:
-      stage: build
-      tags:
-          - rpi
-      script:
-          - make build-rpi
+build-rpi:
+    stage: build
+    tags:
+        - rpi
+    script:
+        - make build-rpi
 
 test-x86:
     stage: test
