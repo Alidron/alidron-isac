@@ -18,7 +18,7 @@
 image_name = alidron/alidron-isac
 rpi_image_name = alidron/rpi-alidron-isac
 registry = registry.tinigrifi.org:5000
-registry_rpi = neuron.local:6667
+rpi_registry = neuron.local:6667
 
 network_name = alidron
 
@@ -41,16 +41,16 @@ push:
 	docker push $(registry)/$(image_name)
 
 push-rpi:
-	docker tag -f $(rpi_image_name) $(registry)/$(rpi_image_name)
-	docker push $(registry)/$(rpi_image_name)
+	docker tag -f $(rpi_image_name) $(rpi_registry)/$(rpi_image_name)
+	docker push $(rpi_registry)/$(rpi_image_name)
 
 pull:
 	docker pull $(registry)/$(image_name)
 	docker tag $(registry)/$(image_name) $(image_name)
 
 pull-rpi:
-	docker pull $(registry_rpi)/$(rpi_image_name)
-	docker tag $(registry_rpi)/$(rpi_image_name) $(rpi_image_name)
+	docker pull $(rpi_registry)/$(rpi_image_name)
+	docker tag $(rpi_registry)/$(rpi_image_name) $(rpi_image_name)
 
 run-bash:
 	docker run -it --net=$(network_name) --rm -v /media/data/Informatique/Python/Netcall/netcall:/usr/src/netcall -v `pwd`:/usr/src/alidron-isac/isac $(image_name) bash
