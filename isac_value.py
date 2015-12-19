@@ -63,14 +63,14 @@ class IsacValue(object):
                     last_ts = last_ts_float
 
                 if initial_value[1] > last_ts: # We want to publish our last value to anyone outside
-                    logger.debug('(%s, %s) publishing former value', self.isac_node.name, self.uri, initial_value)
+                    logger.debug('(%s, %s) publishing former value: %s', self.isac_node.name, self.uri, initial_value)
                     self.value_ts = initial_value
                 else: # We want to notify all our internal subscribers of the newer last value
                     self._value, self._timestamp = None, datetime.fromtimestamp(0)
                     self.update_value_from_isac(last_value, last_ts_float, tags)
 
         else:
-            logger.debug('(%s, %s) publishing value', self.isac_node.name, self.uri, initial_value)
+            logger.debug('(%s, %s) publishing value: %s', self.isac_node.name, self.uri, initial_value)
             self.value_ts = initial_value, ts
 
         #print '>>>>>', self.uri, id(self), type(self._metadata), self._metadata
