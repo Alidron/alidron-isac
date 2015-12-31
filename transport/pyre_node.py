@@ -22,13 +22,17 @@ import uuid
 
 from pyre import Pyre
 
-from ..tools import Event, zmq, green
+from ..tools import Event, zmq, green, spy_call, w_spy_call, spy_object
 
 logger = logging.getLogger(__name__)
 
 class PyreNode(Pyre):
 
     def __init__(self, *args, **kwargs):
+        #spy_object(self, class_=Pyre, except_=['name', 'uuid'], with_caller=False)
+        #spy_call(self.__init__, args, kwargs, with_caller=False); print
+        self._name = None
+        self._uuid = None
         super(self.__class__, self).__init__(*args, **kwargs)
 
         self.request_results = {} # TODO: Fuse the two dicts
@@ -37,13 +41,13 @@ class PyreNode(Pyre):
         self.poller = zmq.Poller()
         self.poller.register(self.inbox, zmq.POLLIN)
 
-        self.join('SURVEY')
-
     def run(self):
         self.task = green.spawn(self._run, 100)
 
     def _run(self, timeout=None):
         self._running = True
+
+        self.join('SURVEY')
         self.start()
 
         while self._running:
@@ -182,3 +186,17 @@ class PyreNode(Pyre):
 
     def shutdown(self):
         self._running = False
+
+    def name(self):
+        if self._name is None:
+            #f = w_spy_call(super(self.__class__, self).name, with_caller=False)
+            f = super(self.__class__, self).name
+            self._name = f()
+        return self._name
+
+    def uuid(self):
+        if self._uuid is None:
+            # f = w_spy_call(super(self.__class__, self).uuid, with_caller=False)
+            f = super(self.__class__, self).name
+            self._uuid = f()
+        return self._uuid
