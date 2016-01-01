@@ -41,13 +41,13 @@ class PyreNode(Pyre):
         self.poller = zmq.Poller()
         self.poller.register(self.inbox, zmq.POLLIN)
 
+        self.join('SURVEY')
+
     def run(self):
         self.task = green.spawn(self._run, 100)
 
     def _run(self, timeout=None):
         self._running = True
-
-        self.join('SURVEY')
         self.start()
 
         while self._running:
@@ -197,6 +197,6 @@ class PyreNode(Pyre):
     def uuid(self):
         if self._uuid is None:
             # f = w_spy_call(super(self.__class__, self).uuid, with_caller=False)
-            f = super(self.__class__, self).name
+            f = super(self.__class__, self).uuid
             self._uuid = f()
         return self._uuid
