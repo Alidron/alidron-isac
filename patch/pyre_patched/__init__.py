@@ -1,4 +1,4 @@
-# Copyright 2015 - Alidron's authors
+# Copyright 2016 - Alidron's authors
 #
 # This file is part of Alidron.
 #
@@ -15,7 +15,5 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Alidron.  If not, see <http://www.gnu.org/licenses/>.
 
-from . import patch
-
-from isac_node import IsacNode
-from isac_value import IsacValue, ArchivedValue, NoPeerWithHistoryException
+from . import pyre_node
+from . import zbeacon

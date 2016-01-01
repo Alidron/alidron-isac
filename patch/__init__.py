@@ -1,4 +1,4 @@
-# Copyright 2015 - Alidron's authors
+# Copyright 2016 - Alidron's authors
 #
 # This file is part of Alidron.
 #
@@ -15,7 +15,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Alidron.  If not, see <http://www.gnu.org/licenses/>.
 
-from . import patch
+import importlib
 
-from isac_node import IsacNode
-from isac_value import IsacValue, ArchivedValue, NoPeerWithHistoryException
+pyre_node_patched = importlib.import_module('isac.patch.pyre_patched.pyre_node')
+pyre_node_original = importlib.import_module('pyre.pyre_node')
+setattr(getattr(pyre_node_original, 'PyreNode'), 'recv_beacon', getattr(pyre_node_patched, 'recv_beacon'))
+
+zbeacon_patched = importlib.import_module('isac.patch.pyre_patched.zbeacon')
+zbeacon_original = importlib.import_module('pyre.zbeacon')
+setattr(getattr(zbeacon_original, 'ZBeacon'), 'handle_pipe', getattr(zbeacon_patched, 'handle_pipe'))
+setattr(getattr(zbeacon_original, 'ZBeacon'), 'send_beacon', getattr(zbeacon_patched, 'send_beacon'))
