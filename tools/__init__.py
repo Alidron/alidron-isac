@@ -15,6 +15,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Alidron.  If not, see <http://www.gnu.org/licenses/>.
 
-from .concurrency import green_backend, green, zmq, Future, Event
+from .concurrency import green_backend, green, zmq, Future, Event, Queue
 from .observable import Observable
 from .debug import spy_object, spy_call, w_spy_call
