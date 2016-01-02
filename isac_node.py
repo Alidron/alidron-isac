@@ -1,4 +1,4 @@
-# Copyright 2015 - Alidron's authors
+# Copyright 2015-2016 - Alidron's authors
 #
 # This file is part of Alidron.
 #
@@ -16,6 +16,7 @@
 # along with Alidron.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import re
 from weakref import WeakValueDictionary
 
 from .tools import green, zmq
@@ -32,6 +33,7 @@ class IsacNode(object):
     def __init__(self, name, context=zmq.Context()):
         self.isac_values = WeakValueDictionary() # Should be a weakdict
 
+        self.rpc_regexp = re.compile('^rpc://(.*?)/(.*)$')
         self.rpc = NetcallRPC(context)
         self.pub_sub = ZmqPubSub(context, self._sub_callback)
 
@@ -56,6 +58,20 @@ class IsacNode(object):
         self.transport.run()
 
         green.sleep(0.1)
+
+    def add_rpc(self, f, name=None):
+        if name is None:
+            name = f.__name__
+
+        published_uri = 'rpc://%s/%s' % (self.name, name)
+
+        self.rpc.register(f, name=name)
+
+        return published_uri
+
+    def call_rpc(self, uri, *args, **kwargs):
+        peer_name, func_name = self.rpc_regexp.match(uri).groups()
+        return self.rpc.call_on(peer_name, func_name, *args, **kwargs)
 
     @property
     def name(self):

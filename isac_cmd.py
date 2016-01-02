@@ -57,6 +57,10 @@ class IsacCmd(cmd.Cmd):
     def do_peers(self, args):
         pp(self.isac_node.transport.peers())
 
+    def do_call(self, args):
+        args = args.split(' ')
+        print self.isac_node.call_rpc(*args)
+
     def do_test1(self, args):
         pp(self.isac_node.survey_value_uri(args))
 
@@ -101,10 +105,13 @@ class IsacCmd(cmd.Cmd):
         cmd.Cmd.postloop(self)   ## Clean up command completion
         print "Exiting..."
 
+def ping(*args, **kwargs):
+    return 'PONG!', args, kwargs
 
 
 if __name__ == '__main__':
     isac_node = IsacNode(sys.argv[1])
+    isac_node.add_rpc(ping)
 
     val = IsacValue(isac_node, 'switch://dimer001/switch_binary/switch')
     green.sleep(0.1)
