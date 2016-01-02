@@ -2,4 +2,6 @@
 omit =
   tests/*
   _test.py
+  tools/debug.py
+  patch/pyre_patched/*
 concurrency = gevent
