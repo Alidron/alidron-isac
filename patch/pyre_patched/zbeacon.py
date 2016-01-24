@@ -1,3 +1,4 @@
+# Copyright - Pyre's authors
 # Copyright 2015-2016 - Alidron's authors
 #
 # This file is part of Alidron.

@@ -25,3 +25,7 @@ zbeacon_patched = importlib.import_module('isac.patch.pyre_patched.zbeacon')
 zbeacon_original = importlib.import_module('pyre.zbeacon')
 setattr(getattr(zbeacon_original, 'ZBeacon'), 'handle_pipe', getattr(zbeacon_patched, 'handle_pipe'))
 setattr(getattr(zbeacon_original, 'ZBeacon'), 'send_beacon', getattr(zbeacon_patched, 'send_beacon'))
+
+zhelper_patched = importlib.import_module('isac.patch.pyre_patched.zhelper')
+zhelper_original = importlib.import_module('pyre.zhelper')
+setattr(zhelper_original, 'get_ifaddrs', getattr(zhelper_patched, 'get_ifaddrs'))

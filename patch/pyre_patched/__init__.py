@@ -17,3 +17,4 @@
 
 from . import pyre_node
 from . import zbeacon
+from . import zhelper
