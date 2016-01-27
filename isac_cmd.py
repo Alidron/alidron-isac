@@ -46,9 +46,15 @@ class IsacCmd(cmd.Cmd):
 
     def do_set(self, args):
         args = args.split(' ')
+        if args[0] not in self.values:
+            self.do_new(args[0])
+            
         self.values[args[0]].value = eval(args[1])
 
     def do_get(self, args):
+        if args not in self.values:
+            self.do_new(args)
+            
         print self.values[args].value_ts_tags
 
     def do_p(self, args):
@@ -62,7 +68,11 @@ class IsacCmd(cmd.Cmd):
         print self.isac_node.call_rpc(*args)
 
     def do_test1(self, args):
-        pp(self.isac_node.survey_value_uri(args))
+        signals = sorted(self.isac_node.survey_value_uri(args))
+        pp(signals)
+        with open('/logs/signal_list.txt', 'w') as f:
+            for signal in signals:
+                f.write(signal + '\n')
 
     def do_test2(self, args):
         print self.isac_node.survey_last_value(args)
@@ -113,10 +123,10 @@ if __name__ == '__main__':
     isac_node = IsacNode(sys.argv[1])
     isac_node.add_rpc(ping)
 
-    val = IsacValue(isac_node, 'switch://dimer001/switch_binary/switch')
-    green.sleep(0.1)
-    val.value = not val.value
-    green.sleep(0.1)
+    #val = IsacValue(isac_node, 'switch://dimer001/switch_binary/switch')
+    #green.sleep(0.1)
+    #val.value = not val.value
+    #green.sleep(0.1)
 
     try:
         def notify_isac_value_entering(peer_name, value_name):

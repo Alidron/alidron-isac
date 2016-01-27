@@ -56,7 +56,10 @@ run-bash:
 	docker run -it --net=$(network_name) --rm -v /media/data/Informatique/Python/Netcall/netcall:/usr/src/netcall -v `pwd`:/usr/src/alidron-isac/isac $(image_name) bash
 
 run:
-	docker run -it --net=$(network_name) --rm $(image_name) python -m isac_cmd hello
+	docker run -it --net=$(network_name) --rm -v `pwd`/_logs:/logs $(image_name) python -m isac_cmd hello
+
+run-alidron-test:
+	docker run -it --net=$(network_name)-test --rm -v `pwd`/_logs:/logs $(image_name) python -m isac_cmd hello
 
 run-rpi:
 	docker run -it --net=$(network_name) --rm $(rpi_image_name) python -m isac_cmd hello
