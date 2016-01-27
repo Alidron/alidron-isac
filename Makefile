@@ -92,4 +92,4 @@ unittest-rpi:
 	docker run --rm --name alidron-isac-unittest $(rpi_image_name) py.test -s --cov-report term-missing --cov-config /usr/src/alidron-isac/isac/.coveragerc --cov=isac /usr/src/alidron-isac
 
 unittest-live:
-	docker run --rm --name alidron-isac-unittest -v `pwd`:/usr/src/alidron-isac/isac $(image_name) py.test -s --cov-report term-missing --cov-config /usr/src/alidron-isac/isac/.coveragerc --cov=isac /usr/src/alidron-isac # -k test_observer_metadata
+	docker run --rm --name alidron-isac-unittest -v `pwd`:/usr/src/alidron-isac/isac $(image_name) py.test -s --cov-report term-missing --cov-config /usr/src/alidron-isac/isac/.coveragerc --cov=isac /usr/src/alidron-isac # -k test_create_many

@@ -424,7 +424,7 @@ def test_observer_metadata(two_nodes):
             green.sleep(0.5)
             if obs.args is not None:
                 break
-                
+
         assert obs.args, 'Callback not received'
         iv_recv, metadata, source_peer = obs.args
         assert iv_recv == ivB
@@ -466,3 +466,50 @@ def test_history(two_nodes):
 
     with pytest.raises(NoPeerWithHistoryException):
         ivB.get_history(time_period)
+
+def test_create_many(two_nodes):
+    nA, nB = two_nodes
+
+    ivAs = []
+    ivBs = []
+    def notify_isac_value_entering(peer_name, uri):
+        iv = IsacValue(nB, str(uri))
+        iv.survey_metadata()
+        ivBs.append(iv)
+
+    nB.register_isac_value_entering(notify_isac_value_entering)
+
+    uri = 'test://test_isac_value/test_create_many/test'
+    metadata = {
+        'uri': uri,
+        'label': 'This is a test',
+        'help': 'You better know how it works!',
+        'max': 0,
+        'min': 65535,
+        'units': 'A',
+        'genre': 'metric',
+        'type': 'int',
+        'is_read_only': True,
+        'is_write_only': False,
+        'instance': 1,
+        'index': 0,
+        'value_id': 15646,
+        'node_id': 1,
+        'location': 'computer',
+        'home_id': '0xbeef',
+        'command_class': 'COMMMAND_CLASS_TEST',
+        'data_items': 'A short between 0 and 65535',
+    }
+    static_tags = {
+        'home_id': '0xbeef',
+        'location': 'computer',
+        'node_id': 1,
+        'command_class': 'COMMMAND_CLASS_TEST',
+        'index': 0,
+        'instance': 1,
+    },
+    for i in range(1000):
+        ivAs.append(IsacValue(nA, uri + str(i), i, static_tags=static_tags, metadata=metadata, survey_last_value=False, survey_static_tags=False))
+        green.sleep(0.010) # Needed otherwise some sockets does not close correctly and the test gets stuck...
+
+    green.sleep(1)
