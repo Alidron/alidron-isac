@@ -44,3 +44,10 @@ deploy-rpi:
         - rpi
     script:
         - make push-rpi
+
+deploy-priv-rpi:
+    stage: deploy
+    tags:
+        - rpi
+    script:
+        - make push-rpi-priv
