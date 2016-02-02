@@ -1,7 +1,7 @@
 # Copyright - Pyre's authors
 # Copyright 2015-2016 - Alidron's authors
 #
-# This file is part of Alidron.
+# This file is part of Alidron, based on an extract from Pyre.
 #
 # Alidron is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
