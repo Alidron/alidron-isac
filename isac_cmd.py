@@ -7,6 +7,7 @@
 from isac import IsacNode, IsacValue
 
 import cmd
+import shlex
 import sys
 import time
 import traceback
@@ -34,13 +35,14 @@ class IsacCmd(cmd.Cmd):
         self.values[args] = IsacValue(self.isac_node, args)
 
     def do_set(self, args):
-        args = args.split(' ')
+        args = shlex.split(args)
         if args[0] not in self.values:
             self.do_new(args[0])
             
         self.values[args[0]].value = eval(args[1])
 
     def do_get(self, args):
+        args = args.strip('"')
         if args not in self.values:
             self.do_new(args)
             
