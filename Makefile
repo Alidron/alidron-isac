@@ -1,4 +1,4 @@
-# Copyright (c) 2015-2016 Contributors as noted in the AUTHORS file
+# Copyright (c) 2015-2020 Contributors as noted in the AUTHORS file
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,7 +10,7 @@ private_rpi_registry = neuron.local:6667
 
 network_name = alidron
 
-.PHONY: clean clean-dangling build build-rpi push push-rpi push-rpi-priv pull pull-rpi pull-rpi-priv run-bash run run1 run1-rpi run2 run2-rpi run3 test1 test2 unittest unittest-rpi unittest-live
+.PHONY: clean clean-dangling build-wheel build build-rpi push push-rpi push-rpi-priv pull pull-rpi pull-rpi-priv run-bash run run1 run1-rpi run2 run2-rpi run3 test1 test2 unittest unittest-rpi unittest-live
 
 clean:
 	docker rmi $(image_name) || true
@@ -18,7 +18,11 @@ clean:
 clean-dangling:
 	docker rmi `docker images -q -f dangling=true` || true
 
-build: clean-dangling
+build-wheel:
+	rm -rf alidron_isac.egg-info build dist
+	python3 setup.py bdist_wheel
+
+build: clean-dangling build-wheel
 	docker build --force-rm=true -t $(image_name) .
 
 build-rpi: clean-dangling
@@ -45,7 +49,7 @@ pull-rpi-priv:
 	docker tag $(private_rpi_registry)/$(rpi_image_name) $(rpi_image_name)
 
 run-bash:
-	docker run -it --net=$(network_name) --rm -v /media/data/Informatique/Python/Netcall/netcall:/usr/src/netcall -v `pwd`:/usr/src/alidron-isac/isac $(image_name) bash
+	docker run -it --net=$(network_name) --rm $(image_name) bash
 
 run:
 	docker run -it --net=$(network_name) --rm -v `pwd`/_logs:/logs $(image_name) python -m isac_cmd hello
@@ -78,10 +82,10 @@ test2:
 	docker run -it --net=$(network_name) --rm $(image_name) python test.py test02
 
 unittest:
-	docker run --rm --name alidron-isac-unittest $(image_name) py.test -s --cov-report term-missing --cov-config /usr/src/alidron-isac/isac/.coveragerc --cov=isac /usr/src/alidron-isac
+	docker run --rm --name alidron-isac-unittest -v `pwd`/tests:/app/tests $(image_name) py.test -s --cov-report term-missing --cov-config /app/tests/.coveragerc --cov=isac /app/tests
 
 unittest-rpi:
-	docker run --rm --name alidron-isac-unittest $(rpi_image_name) py.test -s --cov-report term-missing --cov-config /usr/src/alidron-isac/isac/.coveragerc --cov=isac /usr/src/alidron-isac
+	docker run --rm --name alidron-isac-unittest -v `pwd`/tests:/app/tests $(rpi_image_name) py.test -s --cov-report term-missing --cov-config /app/tests/.coveragerc --cov=isac /app/tests
 
 unittest-live:
-	docker run --rm --name alidron-isac-unittest -v `pwd`:/usr/src/alidron-isac/isac $(image_name) py.test -s --cov-report term-missing --cov-config /usr/src/alidron-isac/isac/.coveragerc --cov=isac /usr/src/alidron-isac # -k test_create_many
+	docker run --rm --name alidron-isac-unittest -v `pwd`/tests:/app/tests -v `pwd`/isac:/app/isac -e PYTHONPATH=/app $(image_name) py.test -s --cov-report term-missing --cov-config /app/tests/.coveragerc --cov=isac /app/tests -x # -k test_create_many

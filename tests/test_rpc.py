@@ -1,31 +1,26 @@
-# Copyright (c) 2015-2016 Contributors as noted in the AUTHORS file
+# Copyright (c) 2015-2020 Contributors as noted in the AUTHORS file
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import logging
-import pytest
+# System imports
+import logging  # noqa: F401
 
-from isac import IsacNode
+# Third-party imports
+
+# Local imports
+from isac.tools.tests import m_two_nodes as two_nodes  # noqa: F401
 
 
-@pytest.fixture(scope='module')
-def two_nodes(request):
-    nA = IsacNode('testA')
-    nB = IsacNode('testB')
+# logging.basicConfig(level=logging.DEBUG)
 
-    def teardown():
-        nA.shutdown()
-        nB.shutdown()
 
-    request.addfinalizer(teardown)
-    return nA, nB
-
-def test_isac_node(two_nodes):
+def test_isac_node(two_nodes):  # noqa: F811
     nA, nB = two_nodes
 
     spy = {}
+
     def my_func(*args, **kwargs):
         spy['args'] = args
         spy.update(kwargs)

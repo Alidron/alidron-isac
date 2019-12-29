@@ -4,12 +4,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import logging
-import pytest
+# System imports
+import logging  # noqa: F401
 
+# Third-party imports
+# import pytest
+
+# Local imports
 from isac.tools import Observable, green
 
 # logging.basicConfig(level=logging.DEBUG)
+
 
 class Observer(object):
     def __init__(self):
@@ -19,6 +24,7 @@ class Observer(object):
     def observer(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
+
 
 def test_add():
     obs = Observable()
@@ -34,6 +40,7 @@ def test_add():
     obs += o2.observer
     assert len(obs) == 2
 
+
 def test_sub():
     obs = Observable()
     o1 = Observer()
@@ -47,6 +54,7 @@ def test_sub():
     obs -= o2.observer
     assert not obs
 
+
 def test_call():
     obs = Observable()
     o1 = Observer()
@@ -58,9 +66,9 @@ def test_call():
     obs('arg1', 'arg2', arg3=3, arg4=4)
     green.sleep(0.1)
     assert o1.args == ('arg1', 'arg2')
-    assert o1.kwargs == {'arg3': 3, 'arg4':4}
+    assert o1.kwargs == {'arg3': 3, 'arg4': 4}
     assert o2.args == ('arg1', 'arg2')
-    assert o2.kwargs == {'arg3': 3, 'arg4':4}
+    assert o2.kwargs == {'arg3': 3, 'arg4': 4}
 
     obs()
     green.sleep(0.1)

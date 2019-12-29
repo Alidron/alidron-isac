@@ -1,17 +1,30 @@
-# Copyright (c) 2015-2016 Contributors as noted in the AUTHORS file
+# Copyright (c) 2015-2020 Contributors as noted in the AUTHORS file
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import logging
+# System imports
+import logging  # noqa: F401
+
+# Third-party imports
+
+# Local imports
 from isac import IsacNode
 
-# logging.basicConfig(level=logging.DEBUG)
+
+# logging.basicConfig(level=logging.INFO)
+# logger = logging.getLogger(__name__)
+# pyre_logger = logging.getLogger('pyre')
+# pyre_logger.setLevel(logging.DEBUG)
+# pyre_logger.addHandler(logging.StreamHandler())
+# pyre_logger.propagate = False
+
 
 def test_creation():
     n = IsacNode('test')
     n.shutdown()
+
 
 def test_creation_double():
     n1 = IsacNode('A')

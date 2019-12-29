@@ -1,28 +1,20 @@
-# Copyright (c) 2015-2016 Contributors as noted in the AUTHORS file
+# Copyright (c) 2015-2020 Contributors as noted in the AUTHORS file
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import logging
-import pytest
+# System imports
+import logging  # noqa: F401
 
-from isac import IsacNode
+# Third-party imports
+
+# Local imports
 from isac.tools import green
+from isac.tools.tests import m_two_nodes as two_nodes  # noqa: F401
 
 # logging.basicConfig(level=logging.DEBUG)
 
-@pytest.fixture(scope='module')
-def two_nodes(request):
-    nA = IsacNode('testA')
-    nB = IsacNode('testB')
-
-    def teardown():
-        nA.shutdown()
-        nB.shutdown()
-
-    request.addfinalizer(teardown)
-    return nA, nB
 
 class Observer(object):
 
@@ -32,11 +24,14 @@ class Observer(object):
     def callback(self, *args):
         self.args = args
 
-def test_isac_value_entering_event(two_nodes):
+
+def test_isac_value_entering_event(two_nodes):  # noqa: F811
     nA, nB = two_nodes
     obs = Observer()
 
     nB.register_isac_value_entering(obs.callback)
+    green.sleep(0.25)
+
     uri = 'test://test_event_value/test_isac_value_entering_event/test'
     nA.event_isac_value_entering(uri)
 
@@ -52,6 +47,7 @@ def test_isac_value_entering_event(two_nodes):
 
     assert obs.args == ('testA', uri)
 
+
 class FakeIsacValue(object):
 
     def __init__(self):
@@ -62,7 +58,8 @@ class FakeIsacValue(object):
         self.metadata = metadata
         self.source_peer = source_peer
 
-def test_value_metadata_update_event(two_nodes):
+
+def test_value_metadata_update_event(two_nodes):  # noqa: F811
     nA, nB = two_nodes
     fake_iv = FakeIsacValue()
     nB.transport.join_event()
