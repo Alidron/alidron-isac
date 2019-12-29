@@ -89,3 +89,7 @@ unittest-rpi:
 
 unittest-live:
 	docker run --rm --name alidron-isac-unittest -v `pwd`/tests:/app/tests -v `pwd`/isac:/app/isac -e PYTHONPATH=/app $(image_name) py.test -s --cov-report term-missing --cov-config /app/tests/.coveragerc --cov=isac /app/tests -x # -k test_create_many
+
+linter:
+	python3 -m flake8 --count --select=E9,F63,F7,F82 --show-source --statistics isac tests
+	python3 -m flake8 --count --exit-zero --max-complexity=15 --max-line-length=100 --statistics isac tests

@@ -7,6 +7,7 @@
 # System imports
 import json
 import logging
+from functools import partial
 from itertools import chain
 from random import randint
 from sys import exc_info
@@ -15,7 +16,7 @@ from traceback import format_exc
 # Third-party imports
 
 # Local imports
-from ..tools import green, zmq, Executor
+from ..tools import zmq, Executor
 
 
 logger = logging.getLogger(__name__)
@@ -72,7 +73,7 @@ class RemoteRPCError(RPCError):
         self.args = (ename, evalue)
 
     def __repr__(self):
-        return f'<RemoteError:{self.ename}({self.evalue})'
+        return f'<RemoteError:{self.ename}({self.evalue})>'
 
     def __str__(self):
         if self.traceback:

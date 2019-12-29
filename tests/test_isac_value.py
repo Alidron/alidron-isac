@@ -34,7 +34,7 @@ def test_creation_double():
 
 
 @pytest.mark.xfail  # noqa: F811
-def test_weakref(one_node):
+def test_weakref(one_node):  # noqa: F811
     iv = IsacValue(
         one_node, 'test://test_isac_value/test_weakref/test_iv',
         survey_last_value=False, survey_static_tags=False

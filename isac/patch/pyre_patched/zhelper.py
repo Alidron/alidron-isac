@@ -33,6 +33,7 @@ except ImportError:
 # Third-party imports
 
 # Local imports
+from pyre.zhelper import get_win_ifaddrs
 
 
 if platform.startswith("darwin") or platform.startswith("freebsd"):

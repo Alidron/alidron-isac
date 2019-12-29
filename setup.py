@@ -14,9 +14,14 @@ import setuptools
 
 
 base_folder = os.path.dirname(os.path.abspath(__file__))
+
 readme_file = os.path.join(base_folder, 'README.md')
 with open(readme_file, 'r') as fh:
     long_description = fh.read()
+
+req_file = os.path.join(base_folder, 'requirements.txt')
+with open(req_file, 'r') as fh:
+    install_requires = fh.read().splitlines()
 
 
 setup_args = dict(
@@ -29,11 +34,7 @@ setup_args = dict(
     long_description_content_type='text/markdown',
     url='http://github.com/Alidron/alidron-isac',
     packages=setuptools.find_packages(),
-    install_requires=[
-        'gevent',
-        'pyzmq',
-        'pyre',
-    ],
+    # install_requires=install_requires,
     tests_require=[
         'pytest',
     ],
