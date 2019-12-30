@@ -30,4 +30,5 @@ jobs:
         flake8 --count --exit-zero --max-complexity=15 --max-line-length=100 --statistics isac tests
     - name: Test with pytest
       run: |
+        export PYTHONPATH=:$PYTHONPATH
         pytest -s --cov-report term-missing --cov-config tests/.coveragerc --cov=isac tests/
